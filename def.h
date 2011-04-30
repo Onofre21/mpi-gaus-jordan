@@ -14,16 +14,12 @@ typedef struct a{
 	double **a;
 	int n;
 	int m;
-} matrixA_t;
+} matrix_t;
 
 typedef struct b{
 	double *b;
 	int n;
-}vectorB_t;
+}vector_t;
 
-typedef struct x{
-	double *x;
-	int n;
-}vectorX_t;
 
 #endif /* DEF_H_ */

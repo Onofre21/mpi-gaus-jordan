@@ -11,6 +11,6 @@
 #include <stdio.h>
 #include "def.h"
 
-void readFile(char* filename, matrixA_t*, vectorB_t*);
+void readFile(char* filename, matrix_t*, vector_t*);
 
 #endif /* READER_H_ */
