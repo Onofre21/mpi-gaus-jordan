@@ -14,6 +14,8 @@
 void freeMatrix(matrix_t*);
 void freeVector(vector_t*);
 vector_t createVectorX(int n);
+int duplicateVector(vector_t* dest,vector_t* source);
+int duplicateMatrix(matrix_t* dest,matrix_t* source);
 
 
 #endif /* UTIL_C_ */

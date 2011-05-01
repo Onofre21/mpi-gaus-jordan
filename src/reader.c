@@ -20,7 +20,7 @@ int readFile(char* filename, matrix_t* A, vector_t* B){
 	for(i = 0; i < n; ++i){
 		A->a[i] = malloc(m*sizeof(double));
 		if(A->a[i] == NULL){
-			for(j = i-1; j<n; --j){
+			for(j = i-1; j>=0; --j){
 				free(A->a[i]);
 			}
 			free(A->a);
