@@ -9,11 +9,11 @@ int main(int argc, char** argv){
 	MPI_Init(&argc,&argv);
 	MPI_Comm_size(MPI_COMM_WORLD,&size);
 	MPI_Comm_rank(MPI_COMM_WORLD,&rank);
-	printf("Hello. I'am a rank %d\n", rank);
+	printf("Hello. I'am a rank %d/%d\n", rank,size);
 
 	if(rank == 0){
 		if(argc != 4){
-			fprintf(stderr,"Nie prawidłowe wywołanie programu:\n\tPowinno być: GaussJacobiDiff plik_macierzA plik_wektorB plik_wyjsciowy\n");
+			fprintf(stderr,"Nie prawidłowe wywołanie programu:\n\tPowinno być: GaussJacobiDiff plik_wejsciowy plik_wyjsciowy\n");
 		}
 	}
 

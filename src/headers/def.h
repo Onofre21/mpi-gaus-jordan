@@ -8,7 +8,7 @@
 #ifndef DEF_H_
 #define DEF_H_
 
-#include "mpi.h"
+#include <mpich2/mpi.h>
 
 typedef struct a{
 	double **a;
