@@ -10,7 +10,8 @@
 
 #include <stdio.h>
 #include "def.h"
+#include <stdlib.h>
 
-void readFile(char* filename, matrix_t*, vector_t*);
+int readFile(char* filename, matrix_t*, vector_t*);
 
 #endif /* READER_H_ */
