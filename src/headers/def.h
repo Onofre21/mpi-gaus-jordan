@@ -11,9 +11,8 @@
 #include <mpich2/mpi.h>
 
 typedef struct a{
-	double **a;
+	double *a;
 	int n;
-	int m;
 } matrix_t;
 
 typedef struct b{

@@ -1,12 +1,12 @@
 /*
- * reader.h
+ * iofile.h
  *
  *  Created on: 30-04-2011
  *      Author: alien
  */
 
-#ifndef READER_H_
-#define READER_H_
+#ifndef IOFILE_H_
+#define IOFILE_H_
 
 #include <stdio.h>
 #include "def.h"
@@ -14,4 +14,4 @@
 
 int readFile(char* filename, matrix_t*, vector_t*);
 
-#endif /* READER_H_ */
+#endif /* IOFILE_H_ */
