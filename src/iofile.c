@@ -42,3 +42,21 @@ int readFile(char* filename, matrix_t* A, vector_t* B){
 	fclose(file);
 	return 0;
 }
+
+void printError(int error){
+	printf("Program natrafił na błąd:\n");
+	/*TODO napisać dla każdego błędu osobny wydruk*/
+}
+
+void printResults(char* header,vector_t X,struct timeval start, struct timeval end){
+	int i = 0;
+	printf("Zakończono obliczenia metodą %s.\nOtrzymano następujący wektor:\n");
+	for(; i < X.n; i++){
+		printf("X[%d] = %g\n",i,X.b[i]);
+	}
+	printf("Metoda %s - czas pracy: %ld\n",header,end.tv_sec-start.tv_sec);
+}
+
+void printTimeDiff(struct timeval times[4]){
+	/*TODO wypisać info o różnicy czasów*/
+}
