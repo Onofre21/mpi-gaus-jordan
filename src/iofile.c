@@ -50,11 +50,11 @@ void printError(int error){
 
 void printResults(char* header,vector_t X,struct timeval start, struct timeval end){
 	int i = 0;
-	printf("Zakończono obliczenia metodą %s.\nOtrzymano następujący wektor:\n");
+	printf("Zakończono obliczenia metodą %s.\nOtrzymano następujący wektor:\n",header);
 	for(; i < X.n; i++){
 		printf("X[%d] = %g\n",i,X.b[i]);
 	}
-	printf("Metoda %s - czas pracy: %ld\n",header,end.tv_sec-start.tv_sec);
+	printf("Metoda %s - czas pracy: %ld\n",header,end.tv_usec-start.tv_usec);
 }
 
 void printTimeDiff(struct timeval times[4]){
