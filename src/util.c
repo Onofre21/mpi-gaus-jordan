@@ -28,10 +28,9 @@ int calculateIndexes(int n, int** beginIndexes, int** endIndexes, int* equalsSiz
 	}
 	normalSize = n/size;
 	additional = n%size;
-	for(i = 0; i < n; i++){
+	for(i = 0; i < size; i++){
 		(*beginIndexes)[i] = begin = last+1;
 		(*endIndexes)[i] = last = begin + normalSize + (additional > i ? 0:-1);
-		//FIXME tu jest jakiś błąd
 	}
 	*equalsSize = normalSize + (additional ? 1:0);
 	return 0;

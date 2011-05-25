@@ -38,9 +38,13 @@ int main(int argc, char** argv){
 		printf("ERROR: %d\nA.a[0][0] = %g\nB.b[0] = %g\nA.n = %d\n begin index 0 = %d\n end index 0 = %d\nequalsize = %d\n",error,A.a[0],B.b[0],A.n,beginIndexes[3],endIndexes[3],equalsSize);
 
 		//TODO obliczenia GAUSSEM
+
 		//TODO WYDRUK GAUSSA
+
 		//TODO sprawdzenie czy macierz się nadaje dla Jacobiego
+
 		//TODO obliczenia JACOBI
+
 		//TODO WYdruk JAcobi
 
 
