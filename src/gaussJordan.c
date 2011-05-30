@@ -8,8 +8,10 @@
 #include"headers/gaussJordan.h"
 
 int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* endIndexes,int equalSize){
-	int procSize,i,j,rank,dataSize,nrows;
-	double *data;
+	int procSize,i,j,k,rank,dataSize,nrows;
+	int *markedRows, *columnChecked;
+	double *data,*pivotRow;
+	WhichRank in, out;
 	MPI_Status status;
 	MPI_Comm_size(MPI_COMM_WORLD,&procSize);
 	MPI_Comm_rank(MPI_COMM_WORLD,&rank);
@@ -48,9 +50,63 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 			printf("RANK #%d: data[%d][%d] = %g\n",rank,i,j,data[i*dataSize+j]);
 		}
 	}*/
-	//todo obliczenia
+
+	markedRows = malloc(nrows*sizeof(int));
+	columnChecked = malloc((dataSize-1)*sizeof(int));
+	pivotRow = malloc(dataSize*sizeof(double));
+
+	for(i =0; i < nrows; i++){
+		markedRows[i] = 0;
+	}
+
+	//dla każdej kolumny
+	for(i = 0; i < dataSize-1 ; i++){
+		double tmp = 0.0;
+		int which = -1;
+		for(j = 0; j < nrows;j++){
+			double d = data[j*dataSize+i];
+			if(!markedRows[j] && (fabs(d) > tmp)){
+				tmp = fabs(d);
+				which = j;
+			}
+		}
+		//printf("IN column %d in rank %d my tmp is %g\n",i,rank,tmp);
+		in.max = tmp;
+		in.rank = rank;
+		MPI_Allreduce(&in,&out,1,MPI_DOUBLE_INT,MPI_MAXLOC,MPI_COMM_WORLD);
+		//printf("IN column %d rank %d has max %g\n",i,out.rank,out.max);
+		if(rank == out.rank){
+			markedRows[which] = 1;
+			columnChecked[which] = i;
+			for(j = 0; j < dataSize; j++){
+				pivotRow[j] = data[which*dataSize+j];
+			}
+		}
+		MPI_Bcast(pivotRow,dataSize,MPI_DOUBLE,out.rank,MPI_COMM_WORLD);
+		//TODO sprawdzenie czy pierwszy element pivota nie jest bliski 0
+		for(j = 0; j < nrows; j++){
+			if(!(markedRows[j] && columnChecked[j] == i)){
+				double tmp = data[j*dataSize+i] / pivotRow[i];
+				data[j*dataSize+i] = 0;
+				for( k = i+1; k < dataSize; k++){
+					data[j*dataSize+k] -=pivotRow[k]*tmp;
+				}
+			}
+		}
+	}
+
+	MPI_Barrier(MPI_COMM_WORLD);
+	for(i = 0; i < nrows; i++){
+		for(j = 0; j < dataSize;j++){
+			printf("RANK #%d: data[%d][%d] = %g\n",rank,i,j,data[i*dataSize+j]);
+		}
+	}
 	//todo zebranie wyników
 	//todo zapakowanie wyników
 
+	free(markedRows);
+	free(columnChecked);
+	free(pivotRow);
+	free(data);
 	return 0;
 }
