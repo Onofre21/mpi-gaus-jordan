@@ -10,6 +10,11 @@
 
 #include "def.h"
 
+typedef struct {
+	int rank;
+	double max;
+} WhichRank;
+
 int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* endIndexes,int equalSize);
 
 #endif /* GAUSSJORDAN_H_ */
