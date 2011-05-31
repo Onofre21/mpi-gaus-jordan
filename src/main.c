@@ -15,26 +15,28 @@ int main(int argc, char** argv){
 	MPI_Init(&argc,&argv);
 	MPI_Comm_size(MPI_COMM_WORLD,&size);
 	MPI_Comm_rank(MPI_COMM_WORLD,&rank);
-	printf("Hello. I'am a rank %d/%d\n", rank,size);
 
 	if(rank == 0){
 		error = getParams(argc,argv,inputFile,&precision);
 		if(error != 0){
+			printf("Error params\n");
 			printError(error);
-			MPI_Finalize();
+			MPI_Abort(MPI_COMM_WORLD,-1);
 			return -1;
 		}
 		error = readFile(argv[1],&A,&B);
 		if(error != 0){
+			printf("Error readFile\n");
 			printError(error);
-			MPI_Finalize();
+			MPI_Abort(MPI_COMM_WORLD,-2);
 			return -2;
 		}
 		error = calculateIndexes(A.n,&beginIndexes,&endIndexes,&equalsSize);
 		if(error != 0){
+			printf("Error calculate indexes\n");
 			printError(error);
-			MPI_Finalize();
-			return -2;
+			MPI_Abort(MPI_COMM_WORLD,-3);
+			return -3;
 		}
 		//printf("ERROR: %d\nA.a[0][0] = %g\nB.b[0] = %g\nA.n = %d\n begin index 0 = %d\n end index 0 = %d\nequalsize = %d\n",error,A.a[0],B.b[0],A.n,beginIndexes[3],endIndexes[3],equalsSize);
 	}

@@ -44,7 +44,7 @@ int readFile(char* filename, matrix_t* A, vector_t* B){
 }
 
 void printError(int error){
-	printf("Program natrafił na błąd:\n");
+	printf("Program natrafił na błąd numer %d:\n",error);
 	/*TODO napisać dla każdego błędu osobny wydruk*/
 }
 
