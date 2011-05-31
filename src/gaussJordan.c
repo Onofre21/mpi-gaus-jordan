@@ -18,7 +18,7 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 	if(rank == 0){
 		dataSize = A.n+1;
 	}
-	MPI_Bcast(&dataSize,1,MPI_INTEGER,0,MPI_COMM_WORLD);
+	MPI_Bcast(&dataSize,1,MPI_INT,0,MPI_COMM_WORLD);
 	if(rank == 0){
 		for(i = 1; i < procSize; i++){
 			nrows = endIndexes[i] - beginIndexes[i]+1;
