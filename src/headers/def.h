@@ -8,6 +8,8 @@
 #ifndef DEF_H_
 #define DEF_H_
 #include <mpich2/mpi.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 #define DEFAULT_PRECISION 1e-6
 typedef struct a{

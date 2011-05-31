@@ -8,9 +8,7 @@
 #ifndef IOFILE_H_
 #define IOFILE_H_
 
-#include <stdio.h>
 #include "def.h"
-#include <stdlib.h>
 #include<sys/time.h>
 
 int readFile(char*, matrix_t*, vector_t*);
