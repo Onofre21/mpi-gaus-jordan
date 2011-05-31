@@ -81,7 +81,9 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 			}
 		}
 		MPI_Bcast(pivotRow,dataSize,MPI_DOUBLE,out.rank,MPI_COMM_WORLD);
-		//TODO sprawdzenie czy pierwszy element pivota nie jest bliski 0
+		if(fabs(pivotRow[i]) < EPSILON){
+			return -1;
+		}
 		for(j = 0; j < nrows; j++){
 			if(!(markedRows[j] && columnChecked[j] == i)){
 				double tmp = data[j*dataSize+i] / pivotRow[i];

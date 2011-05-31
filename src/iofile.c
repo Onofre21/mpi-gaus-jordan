@@ -54,7 +54,7 @@ void printResults(char* header,vector_t X,struct timeval start, struct timeval e
 	for(; i < X.n; i++){
 		printf("X[%d] = %g\n",i,X.b[i]);
 	}
-	printf("Metoda %s - czas pracy: %ld\n",header,end.tv_usec-start.tv_usec);
+	printf("Metoda %s - czas pracy: %ld mikrosekund\n",header,end.tv_usec-start.tv_usec);
 }
 
 void printTimeDiff(struct timeval times[4]){

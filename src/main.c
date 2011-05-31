@@ -11,6 +11,8 @@ int main(int argc, char** argv){
 	matrix_t A;
 	vector_t B, X;
 	int *beginIndexes, *endIndexes;
+	struct timeval start,end;
+	struct timezone timezone;
 
 	MPI_Init(&argc,&argv);
 	MPI_Comm_size(MPI_COMM_WORLD,&size);
@@ -40,11 +42,21 @@ int main(int argc, char** argv){
 		}
 	}
 
-	// obliczenia GAUSSEM
+	if(rank==0){
+		gettimeofday(&start,&timezone);
+	}
 	error = calculateGauss(A,B,&X,beginIndexes,endIndexes,equalsSize);
+	if(rank==0){
+		gettimeofday(&end,&timezone);
+	}
 
-	//TODO WYDRUK GAUSSA
-
+	if(rank == 0){
+		if(error<0){
+			printError(error);
+		}else{
+			printResults("Gauss-Jordan",X,start,end);
+		}
+	}
 	MPI_Barrier(MPI_COMM_WORLD);
 
 	// robota Lewego
