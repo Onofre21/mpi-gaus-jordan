@@ -46,11 +46,11 @@ int main(int argc, char** argv){
 		gettimeofday(&start,&timezone);
 	}
 	error = calculateGauss(A,B,&X,beginIndexes,endIndexes,equalsSize);
-	//printf("Hello %d\n",error);
 	if(rank==0){
 		gettimeofday(&end,&timezone);
 	}
 
+	MPI_Barrier(MPI_COMM_WORLD);
 	if(rank == 0){
 		if(error<0){
 			printError(error);
@@ -58,6 +58,7 @@ int main(int argc, char** argv){
 			printResults("Gauss-Jordan",X,start,end);
 		}
 	}
+
 	MPI_Barrier(MPI_COMM_WORLD);
 
 	// robota Lewego
@@ -70,7 +71,6 @@ int main(int argc, char** argv){
 		free(beginIndexes);
 		free(endIndexes);
 	}
-
 	MPI_Finalize();
 	return 0;
 }

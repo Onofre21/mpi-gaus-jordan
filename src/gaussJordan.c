@@ -87,13 +87,14 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 		if(fabs(pivotRow[i]) < EPSILON){
 			MPI_Barrier(MPI_COMM_WORLD);
 			if(nrows >0){
-				printf("Hello %d\n",rank);
+				printf("%p %p in rank %d\n",markedRows,data,rank);
 				free(markedRows);
 				free(data);
 			}
 			MPI_Barrier(MPI_COMM_WORLD);
 			free(columnChecked);
 			free(pivotRow);
+			MPI_Barrier(MPI_COMM_WORLD);
 			return -1;
 		}
 		for(j = 0; j < nrows; j++){

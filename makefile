@@ -21,6 +21,18 @@ util:
 run:
 	mpiexec -np 5 ${BIN} ${DATA}
 	
+run2:
+	mpiexec -np 5 ${BIN} ${DATA}2
+	
+run3:
+	mpiexec -np 5 ${BIN} ${DATA}3
+	
+run4:
+	mpiexec -np 5 ${BIN} ${DATA}4
+	
+run5:
+	mpiexec -np 5 ${BIN} ${DATA}5
+	
 clean: 
 	rm *.o
 	 
