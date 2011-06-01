@@ -20,11 +20,11 @@ int calculateIndexes(int n, int** beginIndexes, int** endIndexes, int* equalsSiz
 	int size, begin, last = -1, i, normalSize,additional;
 	MPI_Comm_size(MPI_COMM_WORLD,&size);
 	if((*beginIndexes = malloc(size*sizeof(int))) == NULL){
-		return -1;
+		return -4;
 	}
 	if((*endIndexes = malloc(size*sizeof(int))) == NULL){
 		free(*beginIndexes);
-		return -2;
+		return -4;
 	}
 	normalSize = n/size;
 	additional = n%size;

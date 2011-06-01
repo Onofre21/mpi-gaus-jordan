@@ -7,8 +7,8 @@
 
 #include"headers/gaussJordan.h"
 
-int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* endIndexes,int equalSize){
-	int procSize,i,j,k,rank,dataSize,nrows;
+int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* endIndexes){
+	int procSize,i,j,k,rank,dataSize,nrows,flag=0;
 	int *markedRows, *columnChecked;
 	double *data,*pivotRow;
 	WhichRank in, out;
@@ -28,8 +28,9 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 				MPI_Send(&(B.b[j]),1,MPI_DOUBLE,i,0,MPI_COMM_WORLD);
 			}
 		}
-		data = malloc((endIndexes[0]-beginIndexes[0]+1)*dataSize*sizeof(double));
 		nrows = endIndexes[0] - beginIndexes[0]+1;
+		data = (double*)malloc((nrows)*dataSize*sizeof(double));
+
 		for(i = beginIndexes[0]; i <= endIndexes[0]; i++){
 			for(j = 0; j < dataSize-1; j++){
 				data[i*dataSize+j] = A.a[i*A.n+j];
@@ -39,7 +40,7 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 	}else{
 		MPI_Recv(&nrows,1,MPI_INT,0,0,MPI_COMM_WORLD,&status);
 		if(nrows >0){
-			data = malloc(nrows*dataSize*sizeof(double));
+			data = (double*)malloc(nrows*dataSize*sizeof(double));
 		}
 		for( i = 0; i < nrows; i++){
 			MPI_Recv(data+i*dataSize,dataSize-1,MPI_DOUBLE,0,0,MPI_COMM_WORLD,&status);
@@ -53,10 +54,10 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 		}
 	}*/
 	if(nrows > 0){
-		markedRows = malloc(nrows*sizeof(int));
+		markedRows = (int*)malloc(nrows*sizeof(int));
 	}
-	columnChecked = malloc((dataSize-1)*sizeof(int));
-	pivotRow = malloc(dataSize*sizeof(double));
+	columnChecked = (int*)malloc((dataSize-1)*sizeof(int));
+	pivotRow = (double*)malloc(dataSize*sizeof(double));
 
 	for(i =0; i < nrows; i++){
 		markedRows[i] = 0;
@@ -84,9 +85,12 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 			}
 		}
 		MPI_Bcast(pivotRow,dataSize,MPI_DOUBLE,out.rank,MPI_COMM_WORLD);
-		if(fabs(pivotRow[i]) < EPSILON){
-			MPI_Barrier(MPI_COMM_WORLD);
-			if(nrows >0){
+		if(rank==0 && fabs(pivotRow[i]) < EPSILON){
+			printError(-55);
+			MPI_Abort(MPI_COMM_WORLD,1);
+			//TODO Napisać komentarz dlaczego tak
+			return -1;
+			/*if(nrows >0){
 				printf("%p %p in rank %d\n",markedRows,data,rank);
 				free(markedRows);
 				free(data);
@@ -96,6 +100,7 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 			free(pivotRow);
 			MPI_Barrier(MPI_COMM_WORLD);
 			return -1;
+			*/
 		}
 		for(j = 0; j < nrows; j++){
 			if(!(markedRows[j] && columnChecked[j] == i)){
