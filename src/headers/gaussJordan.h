@@ -11,7 +11,7 @@
 #include "def.h"
 #include <math.h>
 
-#define EPSILON 1e-20
+#define EPSILON 1e-15
 
 typedef struct {
 	double max;

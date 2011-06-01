@@ -38,7 +38,9 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 		}
 	}else{
 		MPI_Recv(&nrows,1,MPI_INT,0,0,MPI_COMM_WORLD,&status);
-		data = malloc(nrows*dataSize*sizeof(double));
+		if(nrows >0){
+			data = malloc(nrows*dataSize*sizeof(double));
+		}
 		for( i = 0; i < nrows; i++){
 			MPI_Recv(data+i*dataSize,dataSize-1,MPI_DOUBLE,0,0,MPI_COMM_WORLD,&status);
 			MPI_Recv(data+((i+1)*dataSize)-1,1,MPI_DOUBLE,0,0,MPI_COMM_WORLD,&status);
@@ -50,8 +52,9 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 			printf("RANK #%d: data[%d][%d] = %g\n",rank,i,j,data[i*dataSize+j]);
 		}
 	}*/
-
-	markedRows = malloc(nrows*sizeof(int));
+	if(nrows > 0){
+		markedRows = malloc(nrows*sizeof(int));
+	}
 	columnChecked = malloc((dataSize-1)*sizeof(int));
 	pivotRow = malloc(dataSize*sizeof(double));
 
@@ -82,6 +85,15 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 		}
 		MPI_Bcast(pivotRow,dataSize,MPI_DOUBLE,out.rank,MPI_COMM_WORLD);
 		if(fabs(pivotRow[i]) < EPSILON){
+			MPI_Barrier(MPI_COMM_WORLD);
+			if(nrows >0){
+				printf("Hello %d\n",rank);
+				free(markedRows);
+				free(data);
+			}
+			MPI_Barrier(MPI_COMM_WORLD);
+			free(columnChecked);
+			free(pivotRow);
 			return -1;
 		}
 		for(j = 0; j < nrows; j++){
@@ -95,8 +107,8 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 		}
 	}
 
-	/*MPI_Barrier(MPI_COMM_WORLD);
-	for(i = 0; i < nrows; i++){
+	MPI_Barrier(MPI_COMM_WORLD);
+	/*for(i = 0; i < nrows; i++){
 		for(j = 0; j < dataSize;j++){
 			printf("RANK #%d: data[%d][%d] = %g\n",rank,i,j,data[i*dataSize+j]);
 		}
@@ -110,17 +122,18 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 			X->b[columnChecked[i]] = pivotRow[i];
 		}
 		for(i = 1; i < procSize; i++){
-			int rows = endIndexes[i] -beginIndexes[i] +1;
+			int rows = endIndexes[i] - beginIndexes[i] +1;
 			for(j = 0; j < rows; j++){
 				int which;
 				MPI_Recv(pivotRow,1,MPI_DOUBLE,i,0,MPI_COMM_WORLD,&status);
 				MPI_Recv(&which,1,MPI_INT,i,0,MPI_COMM_WORLD,&status);
 				X->b[which] = pivotRow[0];
+
 			}
 		}
-		for(i = 0; i < X->n; i++){
+		/*for(i = 0; i < X->n; i++){
 			printf("X[%i] = %g\n",i,X->b[i]);
-		}
+		}*/
 	}else{
 		for(i = 0; i < nrows;i++){
 			pivotRow[i] = data[(i+1)*dataSize-1]/data[i*dataSize+columnChecked[i]];
@@ -130,10 +143,11 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 	}
 
 
-
-	free(markedRows);
+	if(nrows >0){
+		free(markedRows);
+		free(data);
+	}
 	free(columnChecked);
 	free(pivotRow);
-	free(data);
 	return 0;
 }

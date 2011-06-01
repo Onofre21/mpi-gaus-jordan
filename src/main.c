@@ -46,6 +46,7 @@ int main(int argc, char** argv){
 		gettimeofday(&start,&timezone);
 	}
 	error = calculateGauss(A,B,&X,beginIndexes,endIndexes,equalsSize);
+	//printf("Hello %d\n",error);
 	if(rank==0){
 		gettimeofday(&end,&timezone);
 	}
@@ -63,7 +64,6 @@ int main(int argc, char** argv){
 	//TODO sprawdzenie czy macierz się nadaje dla Jacobiego
 	//TODO obliczenia JACOBI
 	//TODO WYdruk JAcobi
-
 	if(rank == 0){
 		freeMatrix(&A);
 		freeVector(&B);

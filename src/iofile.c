@@ -50,11 +50,18 @@ void printError(int error){
 
 void printResults(char* header,vector_t X,struct timeval start, struct timeval end){
 	int i = 0;
+	int sec;
+	long milisec;
 	printf("Zakończono obliczenia metodą %s.\nOtrzymano następujący wektor:\n",header);
 	for(; i < X.n; i++){
 		printf("X[%d] = %g\n",i,X.b[i]);
 	}
-	printf("Metoda %s - czas pracy: %ld mikrosekund\n",header,end.tv_usec-start.tv_usec);
+	sec = end.tv_sec-start.tv_sec;
+	if(end.tv_usec < start.tv_usec){
+		sec--;
+	}
+	milisec = sec*1000000 + (end.tv_usec-start.tv_usec);
+	printf("Metoda %s - czas pracy: %ld mikrosekund\n",header, milisec);
 }
 
 void printTimeDiff(struct timeval times[4]){
