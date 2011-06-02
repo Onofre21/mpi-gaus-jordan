@@ -197,7 +197,10 @@ int calculateGaussJordanSequence(matrix_t A,vector_t B, vector_t* X){
 	X->n = A.n;
 	X->b = malloc(A.n*sizeof(double));
 	for(i = 0; i < X->n; i++){
-
+		X->b[columnChecked[i]] = B.b[columnChecked[i]];
+	}
+	for(i = 0; i < X->n; i++){
+		printf("X[%d] = %g\n",i,X->b[i]);
 	}
 
 	//free(pivotRow);
