@@ -7,16 +7,16 @@
 
 #include"headers/jacobi.h"
 
-void cleanResult(vector_t *X, int n) {
-	int i;
-	X->b = malloc(n * sizeof(double));
-	for (i = 0; i < n; ++i) {
-		X->b[i] = 0;
-	}
-}
+//void cleanResult(vector_t *X, int n) {
+//	int i;
+//	X->b = malloc(n * sizeof(double));
+//	for (i = 0; i < n; ++i) {
+//		X->b[i] = 0;
+//	}
+//}
 
 int allocMemory(matrix_t *M, vector_t *N, matrix_t *D, matrix_t *L,
-		matrix_t *U, int n) {
+		matrix_t *U, vector_t *X, int n) {
 	M->a = malloc(n * n * sizeof(double));
 	if (M->a == NULL) {
 		return -4;
@@ -41,6 +41,12 @@ int allocMemory(matrix_t *M, vector_t *N, matrix_t *D, matrix_t *L,
 	if (U->a == NULL) {
 		return -4;
 	}
+
+	X->b = malloc(n * sizeof(double));
+	if (X->b == NULL) {
+		return -4;
+	}
+
 	return 0;
 }
 
@@ -229,11 +235,7 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes,
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
 	if (rank == 0) {
-		cleanResult(X, A.n);
-	}
-
-	if (rank == 0) {
-		if (allocMemory(&M, &N, &D, &L, &U, M.n) != 0) {
+		if (allocMemory(&M, &N, &D, &L, &U, &N, A.n) != 0) {
 			freeMemory(&M, &N, &D, &L, &U);
 			printError(-4);
 			return -1;
@@ -243,8 +245,8 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes,
 		calculateU(&A, &U);
 		calculateM(&M, &D, &L, &U);
 		calculateN(&N, &D, &B);
-
 	}
+	X->n = A.n;
 
 //		if (rank == 0) {
 //			for (i = 0; i < procSize; i++) {
