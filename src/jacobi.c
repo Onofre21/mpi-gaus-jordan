@@ -132,7 +132,7 @@ int calculateM(matrix_t *M, matrix_t *D, matrix_t *L, matrix_t *U) {
 	n = D->n;
 	size = n * n;
 	matrix_t LU;
-	LU.a = malloc( n * n *sizeof(double));
+	LU.a = malloc(n * n * sizeof(double));
 
 	//Dodanie L + U
 	for (i = 0; i < n; ++i) {
@@ -146,12 +146,12 @@ int calculateM(matrix_t *M, matrix_t *D, matrix_t *L, matrix_t *U) {
 	for (i = 0; i < n; ++i) {
 		for (j = 0; j < n; ++j) {
 			pos = i * n + j;
-			if(j == i){
+			if (j == i) {
 				M->a[pos] = 0;
-			}else{
+			} else {
 				tmp = 0;
-				for(p = 0 ; p < n; ++p){
-					tmp = tmp + D->a[i*n + p] * LU.a[p*n + j];
+				for (p = 0; p < n; ++p) {
+					tmp = tmp + D->a[i * n + p] * LU.a[p * n + j];
 				}
 				M->a[pos] = tmp;
 			}
@@ -166,57 +166,58 @@ int calculateM(matrix_t *M, matrix_t *D, matrix_t *L, matrix_t *U) {
 		}
 	}
 
-//   for(i = 0 ; i < size; ++i){
-//	   printf("L %g \n", L->a[i]);
-//	}
-//   for(i = 0 ; i < size; ++i){
-//	   printf("U %g \n", U->a[i]);
-//	}
-//   for(i = 0 ; i < size; ++i){
-//	   printf("LU %g \n", LU.a[i]);
-//	}
-//   for(i = 0 ; i < size; ++i){
-//	   printf("D %g \n", D->a[i]);
-//	}
-//   for(i = 0 ; i < size; ++i){
-//	  printf("M %g \n", M->a[i]);
-//	}
+	//   for(i = 0 ; i < size; ++i){
+	//	   printf("L %g \n", L->a[i]);
+	//	}
+	//   for(i = 0 ; i < size; ++i){
+	//	   printf("U %g \n", U->a[i]);
+	//	}
+	//   for(i = 0 ; i < size; ++i){
+	//	   printf("LU %g \n", LU.a[i]);
+	//	}
+	//   for(i = 0 ; i < size; ++i){
+	//	   printf("D %g \n", D->a[i]);
+	//	}
+	//   for(i = 0 ; i < size; ++i){
+	//	  printf("M %g \n", M->a[i]);
+	//	}
 	free(LU.a);
 	return 0;
 }
 
-int calculateN(vector_t *N, matrix_t *D, vector_t *B){
+int calculateN(vector_t *N, matrix_t *D, vector_t *B) {
 	int i, j, n;
 	double tmp;
 	int pos;
 	n = D->n;
 	N->n = D->n;
 
-	for(i = 0 ; i < n ; ++i){
+	for (i = 0; i < n; ++i) {
 		tmp = 0;
-		for(j = 0 ; j < n; ++j){
+		for (j = 0; j < n; ++j) {
 			pos = i * n + j;
 			tmp = tmp + (D->a[pos] * B->b[j]);
 		}
 		N->b[i] = tmp;
 	}
-//	for(i = 0 ; i < n; ++i){
-//		   printf("B %g \n", B->b[i]);
-//	}
-//	for(i = 0 ; i < n*n; ++i){
-//		printf("D %g \n", D->a[i]);
-//	}
-//	for(i = 0 ; i < n; ++i){
-//		printf("N %g \n", N->b[i]);
-//	}
+	//	for(i = 0 ; i < n; ++i){
+	//		   printf("B %g \n", B->b[i]);
+	//	}
+	//	for(i = 0 ; i < n*n; ++i){
+	//		printf("D %g \n", D->a[i]);
+	//	}
+	//	for(i = 0 ; i < n; ++i){
+	//		printf("N %g \n", N->b[i]);
+	//	}
 }
 
 int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes,
 		int* endIndexes) {
 	int rank, procSize;
 	int i, j, n;
+	int nrows;
 	double *localM;
-	double  localN;
+	double localN;
 
 	matrix_t M, N, D, L, U;
 
@@ -243,25 +244,37 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes,
 
 	}
 
-	if(rank == 0){
-		for(i = 0 ;i< procSize; i++){
-			printf("Begin Indexes %d, End Indexes %d \n",beginIndexes[i], endIndexes[i]);
+	//	if (rank == 0) {
+	//		for (i = 0; i < procSize; i++) {
+	//			printf("Begin Indexes %d, End Indexes %d \n", beginIndexes[i],
+	//					endIndexes[i]);
+	//		}
+	//	}
+
+	if (rank == 0) {
+		for (i = 1; i < procSize; i++) {
+			nrows = endIndexes[i] - beginIndexes[i] + 1;
+			MPI_Send(&nrows, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
 		}
+	} else {
+		MPI_Recv(&nrows, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
 	}
 
-	for(i = 0 ;i< procSize; i++){
-		if((endIndexes[i] - beginIndexes[i] + 1)>1){
-		}else{
-			//Nic nie rób. Za mało równań, Za mało procesów
-		}
-	}
+	//	  if (rank == 0) // Master process
+	//	   {  printf ("Receiving data . . .\n");
+	//	      for (i = 1; i < procSize; i++)
+	//	      {  MPI_Recv ((void *)&j, 1, MPI_INT, i, 0xACE5, MPI_COMM_WORLD, &status);
+	//	         printf ("[%d] sent %d\n", i, j);
+	//	      }
+	//	   }
+	//	   else
+	//	   {  j = rank * rank;
+	//	      MPI_Send ((void *)&j, 1, MPI_INT, 0, 0xACE5, MPI_COMM_WORLD);
+	//	   }
 
 
-	for(i = 0 ; i < procSize; i++){
-
-	}
-
-	if(rank == 0){
+	printf("Moj nrows wynosi %d \n", nrows);
+	if (rank == 0) {
 		freeMemory(&M, &N, &D, &L, &U);
 	}
 	return 0;
