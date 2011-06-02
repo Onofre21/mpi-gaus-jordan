@@ -7,13 +7,13 @@
 
 #include"headers/jacobi.h"
 
-//void cleanResult(vector_t *X, int n) {
-//	int i;
-//	X->b = malloc(n * sizeof(double));
-//	for (i = 0; i < n; ++i) {
-//		X->b[i] = 0;
-//	}
-//}
+void cleanResult(vector_t *X, int n) {
+	int i;
+	X->b = malloc(n * sizeof(double));
+	for (i = 0; i < n; ++i) {
+		X->b[i] = 0;
+	}
+}
 
 int allocMemory(matrix_t *M, vector_t *N, matrix_t *D, matrix_t *L,
 		matrix_t *U, vector_t *X, int n) {
@@ -247,7 +247,7 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes,
 		calculateN(&N, &D, &B);
 	}
 	X->n = A.n;
-
+	cleanResult(&X,X->n);
 //		if (rank == 0) {
 //			for (i = 0; i < procSize; i++) {
 //				printf("Begin Indexes %d, End Indexes %d \n", beginIndexes[i],
@@ -292,6 +292,9 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes,
 //		printf("Rank %d. Moje lokalne M %g \n", rank, localM[rowSize] );
 //	}
 	printf("Jestem rank %d. Moj nrows wynosi %d \n",rank, nrows);
+
+	//usun to pozniej
+
 
 	if (rank == 0) {
 		freeMemory(&M, &N, &D, &L, &U);

@@ -9,7 +9,7 @@ int main(int argc, char** argv){
 	char* inputFile = NULL;
 	double precision;
 	matrix_t A;
-	vector_t B, X;
+	vector_t B, XGaussSeq,XGauss,XJacobi;
 	int *beginIndexes, *endIndexes;
 	struct timeval start,end;
 	struct timezone timezone;
@@ -41,13 +41,13 @@ int main(int argc, char** argv){
 
 	if(rank==0){
 		gettimeofday(&start,&timezone);
-		error = calculateGaussJordanSequence(A,B,&X);
+		error = calculateGaussJordanSequence(A,B,&XGaussSeq);
 		gettimeofday(&end,&timezone);
 		if(error<0){
 			printError(error);
 		}else{
-			printResultsSequence("Gauss-Jordan",X,start,end);
-			free(X.b);
+			printResultsSequence("Gauss-Jordan",XGaussSeq,start,end);
+			freeVector(&XGaussSeq);
 		}
 	}
 
@@ -56,12 +56,13 @@ int main(int argc, char** argv){
 	if(rank==0){
 		gettimeofday(&start,&timezone);
 	}
-	calculateGauss(A,B,&X,beginIndexes,endIndexes);
+	calculateGauss(A,B,&XGauss,beginIndexes,endIndexes);
 	if(rank==0){
 		gettimeofday(&end,&timezone);
 	}
 	if(rank == 0){
-		printResults("Gauss-Jordan",X,start,end);
+		printResults("Gauss-Jordan",XGauss,start,end);
+		freeVector(&XGauss);
 	}
 	MPI_Barrier(MPI_COMM_WORLD);
 
@@ -71,12 +72,13 @@ int main(int argc, char** argv){
 	if(rank==0){
 			gettimeofday(&start,&timezone);
 		}
-	calculateJacobi(A,B,&X,beginIndexes,endIndexes);
+	calculateJacobi(A,B,&XJacobi,beginIndexes,endIndexes);
 	if(rank==0){
 		gettimeofday(&end,&timezone);
 	}
 	if(rank == 0){
-		printResults("Jacobi",X,start,end);
+		printResults("Jacobi",XJacobi,start,end);
+		freeVector(&XJacobi);
 	}
 	MPI_Barrier(MPI_COMM_WORLD);
 
