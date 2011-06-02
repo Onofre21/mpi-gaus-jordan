@@ -28,9 +28,12 @@ int calculateIndexes(int n, int** beginIndexes, int** endIndexes, int* equalsSiz
 	}
 	normalSize = n/size;
 	additional = n%size;
+	//printf("normalSize = %d, additional = %d\n",normalSize,additional);
 	for(i = 0; i < size; i++){
 		(*beginIndexes)[i] = begin = last+1;
-		(*endIndexes)[i] = last = begin + normalSize + (additional > i ? 0:-1);
+		(*endIndexes)[i] = last = begin + normalSize + (additional > i ? 0 :-1);
+	//	printf("beginIndexes[%i] = %i\n",i,(*beginIndexes)[i]);
+	//	printf("endIndexes[%i] = %i\n",i,(*endIndexes)[i]);
 	}
 	*equalsSize = normalSize + (additional ? 1:0);
 	return 0;
