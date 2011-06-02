@@ -78,7 +78,7 @@ void printResults(char* header,vector_t X,struct timeval start, struct timeval e
 		sec--;
 	}
 	milisec = sec*1000000 + (end.tv_usec-start.tv_usec);
-	printf("%d %d %d %d\n",start.tv_sec,start.tv_usec,end.tv_sec,end.tv_usec);
+	//printf("%d %d %d %d\n",start.tv_sec,start.tv_usec,end.tv_sec,end.tv_usec);
 	MPI_Comm_size(MPI_COMM_WORLD,&size);
 	printf("Metoda %s - czas pracy: %ld mikrosekund dla rzędu układu %d i %d procesów\n",header, milisec,X.n,size);
 }
@@ -96,7 +96,7 @@ void printResultsSequence(char* header,vector_t X,struct timeval start, struct t
 	if(end.tv_usec < start.tv_usec){
 		sec--;
 	}
-	printf("%d %d %d %d\n",start.tv_sec,start.tv_usec,end.tv_sec,end.tv_usec);
+	//printf("%d %d %d %d\n",start.tv_sec,start.tv_usec,end.tv_sec,end.tv_usec);
 	milisec = sec*1000000 + (end.tv_usec-start.tv_usec);
 	printf("Metoda sekwencyjna %s - czas pracy: %ld mikrosekund dla rzędu układu %d\n",header, milisec,X.n);
 }
