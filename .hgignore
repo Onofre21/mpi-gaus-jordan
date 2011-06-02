@@ -2,4 +2,4 @@
 .cproject
 Debug
 syntax: regexp
-^bin/GausJordan$
+.*
