@@ -7,9 +7,10 @@
 
 #include"headers/jacobi.h"
 
-void cleanResult(vector_t *X) {
+void cleanResult(vector_t *X, int n) {
 	int i;
-	for (i = 0; i < X->n; ++i) {
+	X->b = malloc(n * sizeof(double));
+	for (i = 0; i < n; ++i) {
 		X->b[i] = 0;
 	}
 }
@@ -215,11 +216,12 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes,
 		int* endIndexes) {
 	int rank, procSize;
 	int i, j, n;
-	int nrows;
+	int nrows, dataSize, rowSize;
 	double *localM;
 	double localN;
 
-	matrix_t M, N, D, L, U;
+	matrix_t M, D, L, U;
+	vector_t N;
 
 	n = A.n;
 	MPI_Status status;
@@ -227,7 +229,7 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes,
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
 	if (rank == 0) {
-		cleanResult(X);
+		cleanResult(X, A.n);
 	}
 
 	if (rank == 0) {
@@ -244,36 +246,51 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes,
 
 	}
 
-	//	if (rank == 0) {
-	//		for (i = 0; i < procSize; i++) {
-	//			printf("Begin Indexes %d, End Indexes %d \n", beginIndexes[i],
-	//					endIndexes[i]);
-	//		}
-	//	}
+//		if (rank == 0) {
+//			for (i = 0; i < procSize; i++) {
+//				printf("Begin Indexes %d, End Indexes %d \n", beginIndexes[i],
+//						endIndexes[i]);
+//			}
+//		}
+
+	dataSize = A.n * A.n;
+	rowSize = A.n;
 
 	if (rank == 0) {
 		for (i = 1; i < procSize; i++) {
 			nrows = endIndexes[i] - beginIndexes[i] + 1;
 			MPI_Send(&nrows, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
+			for(j = beginIndexes[i]; j <= endIndexes[i];j++){
+				printf("Wysyłam RANK:%d !!!!\n ", i);
+				MPI_Send(&(M.a[rowSize*j]),rowSize,MPI_DOUBLE,i,0,MPI_COMM_WORLD);
+//				MPI_Send(&(N.b[j]),1,MPI_DOUBLE,i,0,MPI_COMM_WORLD);
+			}
 		}
+		localM = (double*)malloc(rowSize*sizeof(double));
+		for(j = 0 ; j < rowSize ; j++){
+			localM[j] = M.a[j];
+		}
+		localN = N.b[0];
+		nrows = endIndexes[0] - beginIndexes[0]+1;
+
 	} else {
 		MPI_Recv(&nrows, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+		if(nrows >0){
+			localM = (double*)malloc(rowSize*sizeof(double));
+		}
+
+		for( i = 0; i < nrows; i++){
+			printf("Odbieram!!!! rank: %d\n ", rank);
+			MPI_Recv(&localM,rowSize,MPI_DOUBLE,0,0,MPI_COMM_WORLD,&status);
+//			MPI_Recv(&localN,1,MPI_DOUBLE,0,0,MPI_COMM_WORLD,&status);
+		}
 	}
 
-	//	  if (rank == 0) // Master process
-	//	   {  printf ("Receiving data . . .\n");
-	//	      for (i = 1; i < procSize; i++)
-	//	      {  MPI_Recv ((void *)&j, 1, MPI_INT, i, 0xACE5, MPI_COMM_WORLD, &status);
-	//	         printf ("[%d] sent %d\n", i, j);
-	//	      }
-	//	   }
-	//	   else
-	//	   {  j = rank * rank;
-	//	      MPI_Send ((void *)&j, 1, MPI_INT, 0, 0xACE5, MPI_COMM_WORLD);
-	//	   }
+//	for(i = 0 ; i < rowSize ; i ++){
+//		printf("Rank %d. Moje lokalne M %g \n", rank, localM[rowSize] );
+//	}
+	printf("Jestem rank %d. Moj nrows wynosi %d \n",rank, nrows);
 
-
-	printf("Moj nrows wynosi %d \n", nrows);
 	if (rank == 0) {
 		freeMemory(&M, &N, &D, &L, &U);
 	}

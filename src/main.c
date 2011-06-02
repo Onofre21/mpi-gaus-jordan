@@ -70,7 +70,7 @@ int main(int argc, char** argv){
 	/*
 	 * Jacobi
 	 */
-/*	if(rank==0){
+	if(rank==0){
 			gettimeofday(&start,&timezone);
 		}
 	calculateJacobi(A,B,&X,beginIndexes,endIndexes);
@@ -81,7 +81,7 @@ int main(int argc, char** argv){
 		printResults("Jacobi",X,start,end);
 	}
 	MPI_Barrier(MPI_COMM_WORLD);
-*/
+
 
 	if(rank == 0){
 		freeMatrix(&A);
