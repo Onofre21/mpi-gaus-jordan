@@ -3,7 +3,7 @@ FLAGS = -pedantic -w -Wall
 DATA = data/data
 SOURCE = src/main.c src/gaussJordan.c src/iofile.c src/util.c src/jacobi.c
 OUTPUT = main.o gaussJordan.o iofile.o util.o jacobi.o
-BIN = bin/GaussJordan
+BIN = bin/GaussJacobiDiff
 DEST = bin/
         
 all: main gaussJordan iofile util jacobi
