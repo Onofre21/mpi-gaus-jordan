@@ -86,7 +86,7 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 		}
 		MPI_Bcast(pivotRow,dataSize,MPI_DOUBLE,out.rank,MPI_COMM_WORLD);
 		if(rank==0 && fabs(pivotRow[i]) < EPSILON){
-			printError(-55);
+			printError(-5);
 			MPI_Abort(MPI_COMM_WORLD,1);
 			//TODO Napisać komentarz dlaczego tak
 			return -1;
@@ -99,8 +99,8 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 			free(columnChecked);
 			free(pivotRow);
 			MPI_Barrier(MPI_COMM_WORLD);
-			return -1;
-			*/
+			return -1;*/
+
 		}
 		for(j = 0; j < nrows; j++){
 			if(!(markedRows[j] && columnChecked[j] == i)){
@@ -155,5 +155,56 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 	}
 	free(columnChecked);
 	free(pivotRow);
+	return 0;
+}
+
+int calculateGaussJordanSequence(matrix_t A,vector_t B, vector_t* X){
+	int i,j,k,which;
+	double tmp;
+	//double *pivotRow = (double*) malloc((A.n+1) * sizeof(double));
+	double *markedRows = (int*) malloc(A.n * sizeof(int));
+	double *columnChecked = (int*) malloc(A.n * sizeof(int));
+	for(i =0; i < A.n; i++){
+		markedRows[i] = 0;
+	}
+	// i to kolumna, j to wiersz
+	for(i = 0; i < A.n; i++){
+		tmp = 0.0;
+		for(j = 0; j < A.n; j++){
+			if(fabs(A.a[j*A.n+i]) > tmp){
+				tmp = fabs(A.a[j*A.n+i]);
+				which = j;
+			}
+		}
+		if(tmp<EPSILON){
+			free(markedRows);
+			free(columnChecked);
+			return -5;
+		}
+		markedRows[which] = 1;
+		columnChecked[which] = i;
+		for(j = 0; j < A.n; j++){
+			if(!(markedRows[j] && columnChecked[j] == i)){
+				tmp = A.a[j*A.n+i] / A.a[which*A.n+i];
+				A.a[j*A.n+i] = 0;
+				for( k = i+1; k < A.n; k++){
+					A.a[j*A.n+k] -= A.a[which*A.n+k]*tmp;
+				}
+				B.b[j] -= B.b[which]*tmp;
+			}
+		}
+	}
+	X->n = A.n;
+	X->b = malloc(A.n*sizeof(double));
+	for(i = 0; i < X->n; i++){
+		X->b[columnChecked[i]] = B.b[columnChecked[i]];
+	}
+	for(i = 0; i < X->n; i++){
+		printf("X[%d] = %g\n",i,X->b[i]);
+	}
+
+	//free(pivotRow);
+	free(markedRows);
+	free(columnChecked);
 	return 0;
 }
