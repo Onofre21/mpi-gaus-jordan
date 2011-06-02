@@ -134,7 +134,6 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 				MPI_Recv(pivotRow,1,MPI_DOUBLE,i,0,MPI_COMM_WORLD,&status);
 				MPI_Recv(&which,1,MPI_INT,i,0,MPI_COMM_WORLD,&status);
 				X->b[which] = pivotRow[0];
-
 			}
 		}
 		/*for(i = 0; i < X->n; i++){
@@ -161,9 +160,8 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 int calculateGaussJordanSequence(matrix_t A,vector_t B, vector_t* X){
 	int i,j,k,which;
 	double tmp;
-	//double *pivotRow = (double*) malloc((A.n+1) * sizeof(double));
-	double *markedRows = (int*) malloc(A.n * sizeof(int));
-	double *columnChecked = (int*) malloc(A.n * sizeof(int));
+	int *markedRows = (int*) malloc(A.n * sizeof(int));
+	int *columnChecked = (int*) malloc(A.n * sizeof(int));
 	for(i =0; i < A.n; i++){
 		markedRows[i] = 0;
 	}
@@ -171,7 +169,7 @@ int calculateGaussJordanSequence(matrix_t A,vector_t B, vector_t* X){
 	for(i = 0; i < A.n; i++){
 		tmp = 0.0;
 		for(j = 0; j < A.n; j++){
-			if(fabs(A.a[j*A.n+i]) > tmp){
+			if(!markedRows[j] && fabs(A.a[j*A.n+i]) > tmp){
 				tmp = fabs(A.a[j*A.n+i]);
 				which = j;
 			}
@@ -196,14 +194,18 @@ int calculateGaussJordanSequence(matrix_t A,vector_t B, vector_t* X){
 	}
 	X->n = A.n;
 	X->b = malloc(A.n*sizeof(double));
-	for(i = 0; i < X->n; i++){
-		X->b[columnChecked[i]] = B.b[columnChecked[i]];
-	}
-	for(i = 0; i < X->n; i++){
-		printf("X[%d] = %g\n",i,X->b[i]);
-	}
 
-	//free(pivotRow);
+	for(i = 0; i < X->n; i++){
+		X->b[columnChecked[i]] = B.b[i]/A.a[ i*A.n+columnChecked[i]];
+	}
+	/*for(i = 0; i < X->n; i++){
+		for(j = 0; j < X->n; j++){
+			printf("A[%d][%d] = %g\n",i,j,A.a[i*A.n+j]);
+		}
+		printf("B[%i]=%g\n",i,B.b[i]);
+		printf("X[%d] = %g\n",i,X->b[i]);
+	}*/
+
 	free(markedRows);
 	free(columnChecked);
 	return 0;
