@@ -46,7 +46,8 @@ int main(int argc, char** argv){
 		if(error<0){
 			printError(error);
 		}else{
-			printResults("Gauss-Jordan Sekwencyjnie",X,start,end);
+			printResultsSequence("Gauss-Jordan",X,start,end);
+			free(X.b);
 		}
 	}
 
