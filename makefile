@@ -27,13 +27,13 @@ run2:
 	mpiexec -np 5 ${BIN} ${DATA}2
 	
 run3:
-	mpiexec -np 5 ${BIN} ${DATA}3
+	mpiexec -np 5 ${BIN} data/dataInvalid1
 	
 run4:
-	mpiexec -np 5 ${BIN} ${DATA}4
+	mpiexec -np 5 ${BIN} data/dataInvalid2
 	
 run5:
-	mpiexec -np 5 ${BIN} ${DATA}5
+	mpiexec -np 5 ${BIN} ${DATA}6
 	
 clean: 
 	rm *.o
