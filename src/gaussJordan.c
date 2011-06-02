@@ -23,14 +23,13 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 		for(i = 1; i < procSize; i++){
 			nrows = endIndexes[i] - beginIndexes[i]+1;
 			MPI_Send(&nrows,1,MPI_INT,i,0,MPI_COMM_WORLD);
-			for(j = beginIndexes[i]; j <= endIndexes[j];j++){
+			for(j = beginIndexes[i]; j <= endIndexes[i];j++){
 				MPI_Send(&(A.a[A.n*j]),A.n,MPI_DOUBLE,i,0,MPI_COMM_WORLD);
 				MPI_Send(&(B.b[j]),1,MPI_DOUBLE,i,0,MPI_COMM_WORLD);
 			}
 		}
 		nrows = endIndexes[0] - beginIndexes[0]+1;
 		data = (double*)malloc((nrows)*dataSize*sizeof(double));
-
 		for(i = beginIndexes[0]; i <= endIndexes[0]; i++){
 			for(j = 0; j < dataSize-1; j++){
 				data[i*dataSize+j] = A.a[i*A.n+j];
