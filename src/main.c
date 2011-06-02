@@ -39,9 +39,22 @@ int main(int argc, char** argv){
 		}
 	}
 
+	if(rank==0){
+		gettimeofday(&start,&timezone);
+		error = calculateGaussJordanSequence(A,B,&X);
+		gettimeofday(&end,&timezone);
+		if(error<0){
+			printError(error);
+		}else{
+			printResultsSequence("Gauss-Jordan",X,start,end);
+			free(X.b);
+		}
+	}
+
 	/*
 	 * Gauss-Jordan
 	 */
+	MPI_Barrier(MPI_COMM_WORLD);
 	if(rank==0){
 		gettimeofday(&start,&timezone);
 	}
