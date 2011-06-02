@@ -39,32 +39,32 @@ int main(int argc, char** argv){
 		}
 	}
 
-	if(rank==0){
-		gettimeofday(&start,&timezone);
-		error = calculateGaussJordanSequence(A,B,&XGaussSeq);
-		gettimeofday(&end,&timezone);
-		if(error<0){
-			printError(error);
-		}else{
-			printResultsSequence("Gauss-Jordan",XGaussSeq,start,end);
-			freeVector(&XGaussSeq);
-		}
-	}
-
-
-	MPI_Barrier(MPI_COMM_WORLD);
-	if(rank==0){
-		gettimeofday(&start,&timezone);
-	}
-	calculateGauss(A,B,&XGauss,beginIndexes,endIndexes);
-	if(rank==0){
-		gettimeofday(&end,&timezone);
-	}
-	if(rank == 0){
-		printResults("Gauss-Jordan",XGauss,start,end);
-		freeVector(&XGauss);
-	}
-	MPI_Barrier(MPI_COMM_WORLD);
+//	if(rank==0){
+//		gettimeofday(&start,&timezone);
+//		error = calculateGaussJordanSequence(A,B,&XGaussSeq);
+//		gettimeofday(&end,&timezone);
+//		if(error<0){
+//			printError(error);
+//		}else{
+//			printResultsSequence("Gauss-Jordan",XGaussSeq,start,end);
+//			freeVector(&XGaussSeq);
+//		}
+//	}
+//
+//
+//	MPI_Barrier(MPI_COMM_WORLD);
+//	if(rank==0){
+//		gettimeofday(&start,&timezone);
+//	}
+//	calculateGauss(A,B,&XGauss,beginIndexes,endIndexes);
+//	if(rank==0){
+//		gettimeofday(&end,&timezone);
+//	}
+//	if(rank == 0){
+//		printResults("Gauss-Jordan",XGauss,start,end);
+//		freeVector(&XGauss);
+//	}
+//	MPI_Barrier(MPI_COMM_WORLD);
 
 	/*
 	 * Jacobi
@@ -73,13 +73,13 @@ int main(int argc, char** argv){
 			gettimeofday(&start,&timezone);
 		}
 	calculateJacobi(A,B,&XJacobi,beginIndexes,endIndexes);
-	if(rank==0){
-		gettimeofday(&end,&timezone);
-	}
-	if(rank == 0){
-		printResults("Jacobi",XJacobi,start,end);
-		freeVector(&XJacobi);
-	}
+//	if(rank==0){
+//		gettimeofday(&end,&timezone);
+//	}
+//	if(rank == 0){
+//		printResults("Jacobi",XJacobi,start,end);
+//		freeVector(&XJacobi);
+//	}
 	MPI_Barrier(MPI_COMM_WORLD);
 
 
