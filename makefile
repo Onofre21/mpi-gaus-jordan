@@ -1,18 +1,20 @@
 CC = mpicc
-FLAGS = -pedantic -pedantic-errors -w -Wall -Werror
+FLAGS = -pedantic -w -Wall 
 DATA = data/data
-SOURCE = src/main.c src/gaussJordan.c src/iofile.c src/util.c
-OUTPUT = main.o gaussJordan.o iofile.o util.o
+SOURCE = src/main.c src/gaussJordan.c src/iofile.c src/util.c src/jacobi.c
+OUTPUT = main.o gaussJordan.o iofile.o util.o jacobi.o
 BIN = bin/GaussJordan
 DEST = bin/
         
-all: main gaussJordan iofile util
+all: main gaussJordan iofile util jacobi
 	${CC} ${OUTPUT} -lm ${FLAGS} -o ${BIN}
 	
 main: 
 	${CC} -c ${FLAGS} src/main.c src/headers/def.h
 gaussJordan: 
 	${CC} -c ${FLAGS} src/gaussJordan.c src/headers/gaussJordan.h src/headers/def.h
+jacobi:
+	${CC} -c ${FLAGS} src/jacobi.c src/headers/jacobi.h src/headers/def.h
 iofile: 
 	${CC} -c ${FLAGS} src/iofile.c src/headers/iofile.h src/headers/def.h
 util:  

@@ -39,6 +39,9 @@ int main(int argc, char** argv){
 		}
 	}
 
+	/*
+	 * Gauss-Jordan
+	 */
 	if(rank==0){
 		gettimeofday(&start,&timezone);
 	}
@@ -51,10 +54,22 @@ int main(int argc, char** argv){
 	}
 	MPI_Barrier(MPI_COMM_WORLD);
 
-	// robota Lewego
-	//TODO sprawdzenie czy macierz się nadaje dla Jacobiego
-	//TODO obliczenia JACOBI
-	//TODO WYdruk JAcobi
+	/*
+	 * Jacobi
+	 */
+	if(rank==0){
+			gettimeofday(&start,&timezone);
+		}
+	calculateJacobi(A,B,&X,beginIndexes,endIndexes);
+	if(rank==0){
+		gettimeofday(&end,&timezone);
+	}
+	if(rank == 0){
+		printResults("Jacobi",X,start,end);
+	}
+	MPI_Barrier(MPI_COMM_WORLD);
+
+
 	if(rank == 0){
 		freeMatrix(&A);
 		freeVector(&B);
