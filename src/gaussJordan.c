@@ -86,7 +86,7 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 		}
 		MPI_Bcast(pivotRow,dataSize,MPI_DOUBLE,out.rank,MPI_COMM_WORLD);
 		if(rank==0 && fabs(pivotRow[i]) < EPSILON){
-			printError(-55);
+			printError(-5);
 			MPI_Abort(MPI_COMM_WORLD,1);
 			//TODO Napisać komentarz dlaczego tak
 			return -1;
@@ -99,8 +99,8 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 			free(columnChecked);
 			free(pivotRow);
 			MPI_Barrier(MPI_COMM_WORLD);
-			return -1;
-			*/
+			return -1;*/
+
 		}
 		for(j = 0; j < nrows; j++){
 			if(!(markedRows[j] && columnChecked[j] == i)){

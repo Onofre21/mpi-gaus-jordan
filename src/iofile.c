@@ -58,7 +58,7 @@ void printError(int error){
 		case -4:
 			printf("Nie można zaalokować pamięci\n");
 			break;
-		case -55:
+		case -5:
 			printf("Układ równań ma nieskończenie wiele rozwiązań lub jest sprzeczny\n");
 			break;
 	}
