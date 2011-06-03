@@ -218,10 +218,10 @@ int calculateN(vector_t *N, matrix_t *D, vector_t *B) {
 	//		}
 }
 
-int getDelta(vector_t *XResult, vector_t *XResult_Old, int rowSize) {
+int getDelta(vector_t *XResult, vector_t *XResult_Old, int rowSize, int nrows) {
 	int i;
 	double sum = 0;
-	printf("Sprawdzam poprawnosc rozwiazania");
+	printf("Sprawdzam poprawnosc rozwiazania. ");
 	for (i = 0; i < rowSize; i++) {
 		sum += abs(XResult_Old->b[i] - XResult->b[i]);
 	}
@@ -234,22 +234,24 @@ int getDelta(vector_t *XResult, vector_t *XResult_Old, int rowSize) {
 }
 
 void calculateX(int row, int nrows, vector_t *XResult, double *localM, double localN, int rowSize) {
-	int i, rank, stop;
-	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	int i, j, stop, rank;
 	double result = 0;
-	stop = nrows;
-	while (stop > 0) {
-		printf("Liczenie rank :%d \n", rank);
-		for (i = 0; i < rowSize; i++) {
-			//printf("LocalM %g, X %g, localN %g, \n", localM[i], X->b[i], localN);
-			result = result + localM[i] * XResult->b[i];
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+	if (nrows > 0) {
+		for (j = 0; j < nrows; j++) {
+			for (i = 0; i < rowSize; i++) {
+				//printf("LocalM %g, X %g, localN %g, \n", localM[i], X->b[i], localN);
+				result = result + localM[i] * XResult->b[i];
+			}
+			result = result + localN;
+			XResult->b[row + j] = result;
+			printf("Liczenie, rozwiązanie:%g \n", (row + j), result);
 		}
-		result = result + localN;
-		printf("Dla wiersza %d, rozwiązanie wyszło %g \n", row, result);
-		XResult->b[row] = result;
-		stop--;
+	} else {
+		printf("Liczenie. - Proces wykluczony\n");
 	}
-	//MPI_Bcast(&(XResult->b[row]), 1, MPI_DOUBLE, rank, MPI_COMM_WORLD);
+	MPI_Bcast(&(XResult->b[row]), 1, MPI_INT, rank, MPI_COMM_WORLD);
 }
 
 int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int* endIndexes) {
@@ -347,16 +349,33 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 	//LICZENIE
 	int accuracy = 1000;
 	while (accuracy > 5) {
-		for (i = nrows; i >= 1; i--) {
-			//printf("Na wejsciu : LocalM %g, X %g, localN %g, \n", localM[1], X->b[1], localN);
+		//if (nrows > 0) {
 			calculateX(localStart, nrows, &XResult, localM, localN, rowSize);
-		}
-		accuracy = getDelta(&XResult, &XResultOld, rowSize);
+		//}
+
 		MPI_Barrier(MPI_COMM_WORLD);
-		//TODO Wymien sie wynikami
+		for(i = 0; i < rowSize; i++){
+			printf("|%g|",XResult.b[i]);
+		}
+
+		MPI_Barrier(MPI_COMM_WORLD);
+
+		if(rank == 0){
+			accuracy = getDelta(XResult, &XResultOld, rowSize, nrows);
+		}
+		MPI_Bcast(&accuracy, 1, MPI_INT, rank, MPI_COMM_WORLD);
+
+
+		MPI_Barrier(MPI_COMM_WORLD);
+		printf("Koniec Iteracji. Accuracy: %d\n", accuracy);
+		MPI_Barrier(MPI_COMM_WORLD);
 	}
 
 	if (rank == 0) {
+		for(i = 0; i < rowSize; i++){
+			X->b[i] = XResult.b[i];
+			printf("|%g|",X->b[i]);
+		}
 		freeMemory(&M, &N, &D, &L, &U);
 	}
 	return 0;
