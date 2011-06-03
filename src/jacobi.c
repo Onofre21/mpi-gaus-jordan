@@ -218,7 +218,7 @@ int calculateN(vector_t *N, matrix_t *D, vector_t *B) {
 	//		}
 }
 
-int checkResultAccuracy(vector_t *XResult, vector_t *XResult_Old, double epsilon, int rowSize) {
+int getDelta(vector_t *XResult, vector_t *XResult_Old, int rowSize) {
 	int i;
 	double sum = 0;
 	printf("Sprawdzam poprawnosc rozwiazania");
@@ -230,19 +230,15 @@ int checkResultAccuracy(vector_t *XResult, vector_t *XResult_Old, double epsilon
 	for (i = 0; i < rowSize; i++) {
 		XResult_Old->b[i] = XResult->b[i];
 	}
-
-	if (sum > epsilon) {
-		return 1;
-	} else {
-		return -1;
-	}
+	return sum;
 }
 
 void calculateX(int row, int nrows, vector_t *XResult, double *localM, double localN, int rowSize) {
-	int i, rank;
+	int i, rank, stop;
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	double result = 0;
-	while (nrows > 0) {
+	stop = nrows;
+	while (stop > 0) {
 		printf("Liczenie rank :%d \n", rank);
 		for (i = 0; i < rowSize; i++) {
 			//printf("LocalM %g, X %g, localN %g, \n", localM[i], X->b[i], localN);
@@ -251,15 +247,16 @@ void calculateX(int row, int nrows, vector_t *XResult, double *localM, double lo
 		result = result + localN;
 		printf("Dla wiersza %d, rozwiązanie wyszło %g \n", row, result);
 		XResult->b[row] = result;
-		//MPI_Bcast(&(XResult->b[row]), 1, MPI_DOUBLE, rank, MPI_COMM_WORLD);
-		nrows--;
+		stop--;
 	}
+	//MPI_Bcast(&(XResult->b[row]), 1, MPI_DOUBLE, rank, MPI_COMM_WORLD);
 }
 
 int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int* endIndexes) {
 	int rank, procSize, i, j, nrows, dataSize, rowSize, localStart;
 	double *localM;
 	double localN;
+	MPI_Status status;
 
 	matrix_t M, D, L, U;
 	vector_t N;
@@ -269,10 +266,9 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 		dataSize = A.n * A.n;
 		rowSize = A.n;
 	}
+
 	MPI_Bcast(&dataSize, 1, MPI_INT, 0, MPI_COMM_WORLD);
 	MPI_Bcast(&rowSize, 1, MPI_INT, 0, MPI_COMM_WORLD);
-
-	MPI_Status status;
 	MPI_Comm_size(MPI_COMM_WORLD, &procSize);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
@@ -294,10 +290,6 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 	//						endIndexes[i]);
 	//			}
 	//		}
-
-
-	//WYSYŁANIE
-
 
 	XResult.b = malloc(rowSize * sizeof(double));
 	XResultOld.b = malloc(rowSize * sizeof(double));
@@ -353,13 +345,16 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 	MPI_Barrier(MPI_COMM_WORLD);
 
 	//LICZENIE
-	//	while (checkResultAccuracy(&XResult, &XResultOld, 5, rowSize) > 0) {
-	//		for (i = nrows; i >= 1; i--) {
-	//			//printf("Na wejsciu : LocalM %g, X %g, localN %g, \n", localM[1], X->b[1], localN);
-	//			calculateX(localStart, nrows, &XResult, localM, localN, rowSize);
-	//		}
-	//		MPI_Barrier(MPI_COMM_WORLD);
-	//	}
+	int accuracy = 1000;
+	while (accuracy > 5) {
+		for (i = nrows; i >= 1; i--) {
+			//printf("Na wejsciu : LocalM %g, X %g, localN %g, \n", localM[1], X->b[1], localN);
+			calculateX(localStart, nrows, &XResult, localM, localN, rowSize);
+		}
+		accuracy = getDelta(&XResult, &XResultOld, rowSize);
+		MPI_Barrier(MPI_COMM_WORLD);
+		//TODO Wymien sie wynikami
+	}
 
 	if (rank == 0) {
 		freeMemory(&M, &N, &D, &L, &U);
