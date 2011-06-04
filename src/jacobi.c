@@ -247,13 +247,12 @@ void calculateX(int row, int nrows, vector_t *XResult, double *localM, double lo
 			}
 			result = result + localN;
 			XResult->b[row + j] = result;
-			printf("rank = %d, Liczenie, rozwiązanie:%g \n",rank, (row + j), result);
+			printf("rank = %d, Liczenie, rozwiązanie:%g [%d] \n",rank,  XResult->b[row + j],row+j);
 		}
 	} else {
 		printf("Liczenie. - Proces wykluczony\n");
 	}
-	printf("Wiersz %d, rozwiązanie %g \n", row, result);
-	MPI_Bcast(&(XResult->b[row]), 1, MPI_DOUBLE, rank, MPI_COMM_WORLD);
+	//printf("Wiersz %d, rozwiązanie %g \n", row, result);
 }
 
 int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int* endIndexes) {
@@ -353,13 +352,14 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 		calculateX(localStart, nrows, &XResult, localM, localN, rowSize);
 
 		MPI_Barrier(MPI_COMM_WORLD);
-	/*	for(i = 0; i < rowSize; i++){
-			printf("|%g|",XResult.b[i]);
+		//send do wszystkich
+		for(i = 0; i < nrows; i++){
+			printf("|%g|\n",XResult.b[localStart+ i]);
 		}
 		printf("\n");
 		MPI_Barrier(MPI_COMM_WORLD);
 
-		if(rank == 0){
+		/*	if(rank == 0){
 			accuracy = getDelta(&XResult, &XResultOld, rowSize, nrows);
 		}
 		MPI_Bcast(&accuracy, 1, MPI_INT, rank, MPI_COMM_WORLD);
@@ -373,7 +373,7 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 	if (rank == 0) {
 		for(i = 0; i < rowSize; i++){
 			X->b[i] = XResult.b[i];
-			printf("|%g|",X->b[i]);
+			//printf("|%g|",X->b[i]);
 		}
 		freeMemory(&M, &N, &D, &L, &U);
 	}
