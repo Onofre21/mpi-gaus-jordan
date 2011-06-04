@@ -251,6 +251,7 @@ void calculateX(int row, int nrows, vector_t *XResult, double *localM, double lo
 	} else {
 		printf("Liczenie. - Proces wykluczony\n");
 	}
+	printf("Wiersz %d, rozwiązanie %g \n", row, result);
 	MPI_Bcast(&(XResult->b[row]), 1, MPI_INT, rank, MPI_COMM_WORLD);
 }
 
@@ -319,7 +320,7 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 			localM[j] = M.a[j];
 		}
 		localN = N.b[0];
-		localStart = beginIndexes[i];
+		localStart = beginIndexes[0];
 		nrows = endIndexes[0] - beginIndexes[0] + 1;
 
 	} else {
@@ -339,7 +340,6 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 	MPI_Barrier(MPI_COMM_WORLD);
 	if (nrows >= 1) {
 		printf("Rank %d.Nrows %d, dataSize %d, rowSize%d, localN %g, localStart %d  \n", rank, nrows, dataSize, rowSize, localN, localStart);
-		printf("X value: %g\n ", X->b[2]);
 		for (i = 0; i < rowSize * nrows; i++) {
 			printf("Rank %d. Moje lokalne M %g. Moje rozwiązanie %g Stare %g\n", rank, localM[i], XResult.b[i], XResultOld.b[i]);
 		}
@@ -349,19 +349,17 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 	//LICZENIE
 	int accuracy = 1000;
 	while (accuracy > 5) {
-		//if (nrows > 0) {
-			calculateX(localStart, nrows, &XResult, localM, localN, rowSize);
-		//}
+		calculateX(localStart, nrows, &XResult, localM, localN, rowSize);
 
 		MPI_Barrier(MPI_COMM_WORLD);
 		for(i = 0; i < rowSize; i++){
 			printf("|%g|",XResult.b[i]);
 		}
-
+		printf("\n");
 		MPI_Barrier(MPI_COMM_WORLD);
 
 		if(rank == 0){
-			accuracy = getDelta(XResult, &XResultOld, rowSize, nrows);
+			accuracy = getDelta(&XResult, &XResultOld, rowSize, nrows);
 		}
 		MPI_Bcast(&accuracy, 1, MPI_INT, rank, MPI_COMM_WORLD);
 
