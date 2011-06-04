@@ -240,19 +240,20 @@ void calculateX(int row, int nrows, vector_t *XResult, double *localM, double lo
 
 	if (nrows > 0) {
 		for (j = 0; j < nrows; j++) {
+			result = 0;
 			for (i = 0; i < rowSize; i++) {
-				//printf("LocalM %g, X %g, localN %g, \n", localM[i], X->b[i], localN);
+				printf("RANK %d +> LocalM %g, X %g, localN %g, \n",rank, localM[i], XResult->b[i], localN);
 				result = result + localM[i] * XResult->b[i];
 			}
 			result = result + localN;
 			XResult->b[row + j] = result;
-			printf("Liczenie, rozwiązanie:%g \n", (row + j), result);
+			printf("rank = %d, Liczenie, rozwiązanie:%g \n",rank, (row + j), result);
 		}
 	} else {
 		printf("Liczenie. - Proces wykluczony\n");
 	}
 	printf("Wiersz %d, rozwiązanie %g \n", row, result);
-	MPI_Bcast(&(XResult->b[row]), 1, MPI_INT, rank, MPI_COMM_WORLD);
+	MPI_Bcast(&(XResult->b[row]), 1, MPI_DOUBLE, rank, MPI_COMM_WORLD);
 }
 
 int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int* endIndexes) {
@@ -264,6 +265,8 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 	matrix_t M, D, L, U;
 	vector_t N;
 	vector_t XResult, XResultOld;
+	MPI_Comm_size(MPI_COMM_WORLD, &procSize);
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
 	if (rank == 0) {
 		dataSize = A.n * A.n;
@@ -272,8 +275,7 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 
 	MPI_Bcast(&dataSize, 1, MPI_INT, 0, MPI_COMM_WORLD);
 	MPI_Bcast(&rowSize, 1, MPI_INT, 0, MPI_COMM_WORLD);
-	MPI_Comm_size(MPI_COMM_WORLD, &procSize);
-	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	//printf("My datasize in rank %d is %d, rows = %d\n",rank,dataSize,rowSize);
 
 	if (rank == 0) {
 		if (allocMemory(&M, &N, &D, &L, &U, &N, A.n) != 0) {
@@ -294,13 +296,12 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 	//			}
 	//		}
 
-	XResult.b = malloc(rowSize * sizeof(double));
+	XResult.b = calloc(rowSize,sizeof(double));
 	XResultOld.b = malloc(rowSize * sizeof(double));
 	if (XResult.b == NULL) {
 		return -4;
 	}
 	for (i = 0; i < rowSize; i++) {
-		XResult.b[i] = 1.0;
 		XResultOld.b[i] = 100.0;
 	}
 
@@ -310,7 +311,7 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 			MPI_Send(&nrows, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
 			MPI_Send(&(beginIndexes[i]), 1, MPI_INT, i, 0, MPI_COMM_WORLD);
 			for (j = beginIndexes[i]; j <= endIndexes[i]; j++) {
-				//	printf("Wysyłam RANK:%d !!!!\n ", i);
+				printf("Wysyłam RANK:%d !!!!\n ", i);
 				MPI_Send(&(M.a[rowSize * j]), rowSize, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
 				MPI_Send(&(N.b[j]), 1, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
 			}
@@ -331,9 +332,9 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 		}
 
 		for (i = 0; i < nrows; i++) {
-			//	printf("Odbieram!!!! rank: %d\n ", rank);
-			MPI_Recv(localM, rowSize * nrows, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
-			MPI_Recv(&localN, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
+			printf("Odbieram!!!! rank: %d\n ", rank);
+			MPI_Recv(localM +i, rowSize, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
+			MPI_Recv(&localN +i, 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
 		}
 	}
 
@@ -348,11 +349,11 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 
 	//LICZENIE
 	int accuracy = 1000;
-	while (accuracy > 5) {
+	//while (accuracy > 5) {
 		calculateX(localStart, nrows, &XResult, localM, localN, rowSize);
 
 		MPI_Barrier(MPI_COMM_WORLD);
-		for(i = 0; i < rowSize; i++){
+	/*	for(i = 0; i < rowSize; i++){
 			printf("|%g|",XResult.b[i]);
 		}
 		printf("\n");
@@ -366,8 +367,8 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 
 		MPI_Barrier(MPI_COMM_WORLD);
 		printf("Koniec Iteracji. Accuracy: %d\n", accuracy);
-		MPI_Barrier(MPI_COMM_WORLD);
-	}
+		MPI_Barrier(MPI_COMM_WORLD);*/
+	//}
 
 	if (rank == 0) {
 		for(i = 0; i < rowSize; i++){
