@@ -8,8 +8,8 @@ int main(int argc, char** argv) {
 	int size, rank, error, equalsSize;
 	char* inputFile = NULL;
 	double precision;
-	matrix_t A;
-	vector_t B, XGaussSeq, XGauss, XJacobi;
+	matrix_t A, A_zast;
+	vector_t B, B_zast, XGaussSeq, XGauss, XJacobi;
 	int *beginIndexes, *endIndexes;
 	struct timeval start, end;
 	struct timezone timezone;
@@ -42,52 +42,59 @@ int main(int argc, char** argv) {
 	/*
 	 * Jordan sekwencyjny
 	 */
-//	if (rank == 0) {
-//		gettimeofday(&start, &timezone);
-//		error = calculateGaussJordanSequence(A, B, &XGaussSeq);
-//		gettimeofday(&end, &timezone);
-//		if (error < 0) {
-//			printError(error);
-//		} else {
-//			printResultsSequence("Gauss-Jordan", XGaussSeq, start, end);
-//			freeVector(&XGaussSeq);
-//		}
-//	}
+	if (rank == 0) {
+		duplicateMatrix(&A_zast,&A);
+		duplicateVector(&B_zast,&B);
+		gettimeofday(&start, &timezone);
+		error = calculateGaussJordanSequence(A_zast, B_zast, &XGaussSeq);
+		gettimeofday(&end, &timezone);
+		freeVector(&B_zast);
+		freeMatrix(&A_zast);
+		if (error < 0) {
+			printError(error);
+		} else {
+			printResultsSequence("Gauss-Jordan", XGaussSeq, start, end);
+			freeVector(&XGaussSeq);
+		}
+	}
 
 	/*
 	 * Jordan równoległy
 	 */
-//	MPI_Barrier(MPI_COMM_WORLD);
-//	if (rank == 0) {
-//		gettimeofday(&start, &timezone);
-//	}
-//	calculateGauss(A, B, &XGauss, beginIndexes, endIndexes);
-//	if (rank == 0) {
-//		gettimeofday(&end, &timezone);
-//	}
-//	if (rank == 0) {
-//		printResults("Gauss-Jordan", XGauss, start, end);
-//		freeVector(&XGauss);
-//	}
-//	MPI_Barrier(MPI_COMM_WORLD);
+	MPI_Barrier(MPI_COMM_WORLD);
+	if (rank == 0) {
+		duplicateMatrix(&A_zast,&A);
+		duplicateVector(&B_zast,&B);
+		gettimeofday(&start, &timezone);
+	}
+	calculateGauss(A_zast, B_zast, &XGauss, beginIndexes, endIndexes);
+	if (rank == 0) {
+		gettimeofday(&end, &timezone);
+		freeVector(&B_zast);
+		freeMatrix(&A_zast);
+		printResults("Gauss-Jordan", XGauss, start, end);
+		freeVector(&XGauss);
+	}
+	MPI_Barrier(MPI_COMM_WORLD);
 
 	/*
 	 * Jacobi
 	 */
-	if (rank == 0) {
+/*	if (rank == 0) {
+		duplicateMatrix(&A_zast,&A);
+		duplicateVector(&B_zast,&B);
 		gettimeofday(&start, &timezone);
 	}
-	calculateJacobi(A, B, &XJacobi, beginIndexes, endIndexes);
+	calculateJacobi(A_zast, B_zast, &XJacobi, beginIndexes, endIndexes);
 	if (rank == 0) {
 		gettimeofday(&end, &timezone);
-	}
-	MPI_Barrier(MPI_COMM_WORLD);
-	if (rank == 0) {
+		freeVector(&B_zast);
+		freeMatrix(&A_zast);
 		printResults("Jacobi", XJacobi, start, end);
 		free(XJacobi.b);
 	}
 	MPI_Barrier(MPI_COMM_WORLD);
-
+*/
 	if (rank == 0) {
 		freeMatrix(&A);
 		freeVector(&B);
