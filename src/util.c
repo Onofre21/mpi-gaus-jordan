@@ -51,3 +51,25 @@ int getParams(int argc, char** argv,char* inputFile, double* precision){
 	}
 	return 0;
 }
+
+int duplicateMatrix(matrix_t* dest,matrix_t* source){
+	int i,j;
+	dest->a = malloc(source->n*source->n*sizeof(double));
+	dest->n = source->n;
+	for(i = 0; i < dest->n;i++){
+		for(j = 0; j < dest->n; j++){
+			dest->a[i*dest->n+j] = source->a[i*source->n+j];
+		}
+	}
+	return 0;
+}
+
+int duplicateVector(vector_t* dest,vector_t* source){
+	int i;
+	dest->b = malloc(source->n*sizeof(double));
+	dest->n = source->n;
+	for(i = 0; i < dest->n; i++){
+		dest->b[i] = source->b[i];
+	}
+	return 0;
+}
