@@ -17,5 +17,6 @@ void calculateL(matrix_t *A, matrix_t *L);
 void calculateU(matrix_t *A, matrix_t *U) ;
 void calculateM(matrix_t *M, matrix_t *D, matrix_t *L, matrix_t *U) ;
 void calculateN(vector_t *N, matrix_t *D, vector_t *B) ;
+int checkMatrix(matrix_t *A);
 
 #endif /* JACOBIUTIL_H_ */

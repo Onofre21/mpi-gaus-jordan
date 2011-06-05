@@ -50,6 +50,10 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 	double localN;
 	MPI_Status status;
 
+	if(checkMatrix(&A) < 0){
+		printf("Macierz nie jest diagonalnie dominująca ! Nie umiem tego policzyc");
+		return -1;
+	}
 	matrix_t M, D, L, U;
 	vector_t N;
 	vector_t XResult, XResultOld;
