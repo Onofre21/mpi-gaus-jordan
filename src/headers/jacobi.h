@@ -9,6 +9,7 @@
 #define JACOBI_H_
 
 #include "def.h"
+#include "jacobiutil.h"
 #include <math.h>
 
 
