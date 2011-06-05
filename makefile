@@ -35,6 +35,9 @@ run4:
 run5:
 	mpiexec -np 5 ${BIN} ${DATA}6
 	
+run6:
+	mpiexec -np 5 ${BIN} ${DATA}Jacobi
+	
 clean: 
 	rm *.o
 	 

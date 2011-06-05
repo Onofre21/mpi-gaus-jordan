@@ -384,14 +384,13 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 			accuracy = getDelta(&XResult, &XResultOld, rowSize, nrows);
 		}
 		MPI_Bcast(&accuracy, 1, MPI_INT, rank, MPI_COMM_WORLD);
-	//	accuracy++;
 	}
 
 	if (rank == 0) {
-		for (i = 0; i < rowSize; i++) {
-			X->b[i] = XResult.b[i];
-			//printf("|%g|",X->b[i]);
-		}
+//		for (i = 0; i < rowSize; i++) {
+//			X->b[i] = XResult.b[i];
+//			//printf("|%g|",X->b[i]);
+//		}
 		freeMemory(&M, &N, &D, &L, &U);
 	}
 	return 0;
