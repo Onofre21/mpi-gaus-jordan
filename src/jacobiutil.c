@@ -71,7 +71,6 @@ void calculateRDiagonal(matrix_t *A, matrix_t *D) {
 	//	for(i = 0 ; i < size; ++i){
 	//		printf("Diagonala %g \n", D->a[i]);
 	//	}
-	return 0;
 }
 
 void calculateL(matrix_t *A, matrix_t *L) {
@@ -95,7 +94,6 @@ void calculateL(matrix_t *A, matrix_t *L) {
 	//for(i = 0 ; i < size; ++i){
 	//	printf("Lower %g \n", L->a[i]);
 	//}
-	return 0;
 }
 
 void calculateU(matrix_t *A, matrix_t *U) {
@@ -119,7 +117,6 @@ void calculateU(matrix_t *A, matrix_t *U) {
 	//  for(i = 0 ; i < size; ++i){
 	//	  printf("Lower %g \n", U->a[i]);
 	//	}
-	return 0;
 }
 
 void calculateM(matrix_t *M, matrix_t *D, matrix_t *L, matrix_t *U) {
@@ -181,7 +178,6 @@ void calculateM(matrix_t *M, matrix_t *D, matrix_t *L, matrix_t *U) {
 	//		  printf("M %g \n", M->a[i]);
 	//		}
 	free(LU.a);
-	return 0;
 }
 
 void calculateN(vector_t *N, matrix_t *D, vector_t *B) {
