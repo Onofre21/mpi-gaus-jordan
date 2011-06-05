@@ -5,7 +5,7 @@
  *      Author: lewy
  */
 
-#include"headers/jacobiutil.h"
+#include "headers/jacobiutil.h"
 
 int allocMemory(matrix_t *M, vector_t *N, matrix_t *D, matrix_t *L, matrix_t *U, vector_t *X, int n) {
 	int i;
