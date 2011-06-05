@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
 	/*
 	 * Jacobi
 	 */
-/*	if (rank == 0) {
+	if (rank == 0) {
 		duplicateMatrix(&A_zast,&A);
 		duplicateVector(&B_zast,&B);
 		gettimeofday(&start, &timezone);
@@ -94,7 +94,7 @@ int main(int argc, char** argv) {
 		free(XJacobi.b);
 	}
 	MPI_Barrier(MPI_COMM_WORLD);
-*/
+
 	if (rank == 0) {
 		freeMatrix(&A);
 		freeVector(&B);
