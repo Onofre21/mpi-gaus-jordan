@@ -15,8 +15,8 @@ gaussJordan:
 	${CC} -c ${FLAGS} src/gaussJordan.c src/headers/gaussJordan.h src/headers/def.h
 jacobiutil:
 	${CC} -c ${FLAGS} src/jacobiutil.c src/headers/jacobiutil.h src/headers/def.h
-jacobi: 
-	${CC} -c ${FLAGS} src/jacobi.c src/headers/jacobi.h src/headers/def.h
+jacobi: jacobiutil
+	${CC} -c ${FLAGS} src/jacobi.c src/headers/jacobi.h src/headers/jacobiutil.h src/headers/def.h
 iofile: 
 	${CC} -c ${FLAGS} src/iofile.c src/headers/iofile.h src/headers/def.h
 util:  
@@ -42,3 +42,4 @@ run6:
 	
 clean: 
 	rm *.o
+	rm src/headers/*.gch
