@@ -88,10 +88,10 @@ int main(int argc, char** argv) {
 	calculateJacobi(A_zast, B_zast, &XJacobi, beginIndexes, endIndexes);
 	if (rank == 0) {
 		gettimeofday(&end, &timezone);
-		freeVector(&B_zast);
-		freeMatrix(&A_zast);
 		printResults("Jacobi", XJacobi, start, end);
 		free(XJacobi.b);
+		freeVector(&B_zast);
+		freeMatrix(&A_zast);
 	}
 	MPI_Barrier(MPI_COMM_WORLD);
 

@@ -49,12 +49,6 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 	double *localM;
 	double localN;
 	MPI_Status status;
-
-	if(checkMatrix(&A) < 0){
-		printf("\n\n Macierz nie jest diagonalnie dominująca ! Nie umiem tego policzyc \n\n\n");
-		MPI_Abort(MPI_COMM_WORLD, -1);
-		return -1;
-	}
 	matrix_t M, D, L, U;
 	vector_t N;
 	vector_t XResult, XResultOld;
@@ -62,6 +56,11 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
 	if (rank == 0) {
+		if(checkMatrix(&A) < 0){
+			printf("\n\n Macierz nie jest diagonalnie dominująca ! Nie umiem tego policzyc \n\n\n");
+			MPI_Abort(MPI_COMM_WORLD, -1);
+			return -1;
+		}
 		dataSize = A.n * A.n;
 		rowSize = A.n;
 	}
@@ -89,6 +88,7 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 	if (XResult.b == NULL) {
 		return -4;
 	}
+
 	for (i = 0; i < rowSize; i++) {
 		XResultOld.b[i] = 100.0;
 	}
