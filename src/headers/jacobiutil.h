@@ -9,7 +9,6 @@
 #define JACOBIUTIL_H_
 
 #include "def.h"
-#include <math.h>
 
 int allocMemory(matrix_t *M, vector_t *N, matrix_t *D, matrix_t *L, matrix_t *U, vector_t *X, int n) ;
 void freeMemory(matrix_t *M, vector_t *N, matrix_t *D, matrix_t *L, matrix_t *U);

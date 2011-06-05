@@ -16,7 +16,7 @@ gaussJordan:
 jacobiutil:
 	${CC} -c ${FLAGS} src/jacobiutil.c src/headers/jacobiutil.h src/headers/def.h
 jacobi:
-	${CC} -c ${FLAGS} src/jacobi.c src/headers/jacobi.h src/headers/jacobiutil.h src/jacobiutil.c src/headers/def.h
+	${CC} -c ${FLAGS} src/jacobi.c src/headers/jacobi.h src/headers/def.h
 iofile: 
 	${CC} -c ${FLAGS} src/iofile.c src/headers/iofile.h src/headers/def.h
 util:  
