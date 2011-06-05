@@ -42,4 +42,3 @@ run6:
 	
 clean: 
 	rm *.o
-	 
