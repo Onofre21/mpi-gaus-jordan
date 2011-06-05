@@ -10,12 +10,12 @@
 int getDelta(vector_t *XResult, vector_t *XResult_Old, int rowSize, int nrows) {
 	int i;
 	double sum = 0;
-	printf("Sprawdzam poprawnosc rozwiazania. ");
+	//printf("Sprawdzam poprawnosc rozwiazania. ");
 	for (i = 0; i < rowSize; i++) {
 		sum += abs(XResult_Old->b[i] - XResult->b[i]);
 	}
 	sum = sum / rowSize;
-	printf("Suma: %g \n", sum);
+	//printf("Suma: %g \n", sum);
 	for (i = 0; i < rowSize; i++) {
 		XResult_Old->b[i] = XResult->b[i];
 	}
@@ -31,15 +31,15 @@ void calculateX(int row, int nrows, vector_t *XResult, double *localM, double lo
 		for (j = 0; j < nrows; j++) {
 			result = 0;
 			for (i = 0; i < rowSize; i++) {
-				printf("RANK %d +> LocalM %g, X %g, localN %g, \n", rank, localM[i], XResult->b[i], localN);
+			//	printf("RANK %d +> LocalM %g, X %g, localN %g, \n", rank, localM[i], XResult->b[i], localN);
 				result = result + localM[i] * XResult->b[i];
 			}
 			result = result + localN;
 			XResult->b[row + j] = result;
-			printf("rank = %d, Liczenie, rozwiązanie:%g [%d] \n", rank, XResult->b[row + j], row + j);
+			//printf("rank = %d, Liczenie, rozwiązanie:%g [%d] \n", rank, XResult->b[row + j], row + j);
 		}
 	} else {
-		printf("Liczenie. - Proces wykluczony\n");
+		//printf("Liczenie. - Proces wykluczony\n");
 	}
 	//printf("Wiersz %d, rozwiązanie %g \n", row, result);
 }
@@ -51,7 +51,8 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 	MPI_Status status;
 
 	if(checkMatrix(&A) < 0){
-		printf("Macierz nie jest diagonalnie dominująca ! Nie umiem tego policzyc");
+		printf("\n\n Macierz nie jest diagonalnie dominująca ! Nie umiem tego policzyc \n\n\n");
+		MPI_Abort(MPI_COMM_WORLD, -1);
 		return -1;
 	}
 	matrix_t M, D, L, U;
@@ -158,7 +159,7 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 		int procLength = 0;
 		for (i = 0; i < procSize; i++) {
 			if (nrows > 0 && i != rank) {
-				printf("Rank %d. Robie send do %d, o dlugosci %d. \n", rank, i, nrows);
+			//	printf("Rank %d. Robie send do %d, o dlugosci %d. \n", rank, i, nrows);
 				MPI_Send(&(XResult.b[localStart]), nrows, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
 			}
 		}
@@ -166,7 +167,7 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 		for (i = 0; i < procSize; i++) {
 			if (nrows > 0 && i != rank) {
 				procLength = endIndexes[i] - beginIndexes[i] + 1;
-				printf("Rank %d. Robie recv od %d, o dlugosci %d. \n", rank, i, procLength);
+			//	printf("Rank %d. Robie recv od %d, o dlugosci %d. \n", rank, i, procLength);
 				if (procLength > 0) {
 					MPI_Recv(&(XResult.b[beginIndexes[i]]), procLength, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &status);
 				}
@@ -176,7 +177,7 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 		MPI_Barrier(MPI_COMM_WORLD);
 
 		for (i = 0; i < rowSize; i++) {
-			printf("Rank %d, Komorka %d, wynik: %g \n", rank, i, XResult.b[i]);
+		//	printf("Rank %d, Komorka %d, wynik: %g \n", rank, i, XResult.b[i]);
 		}
 
 		MPI_Barrier(MPI_COMM_WORLD);
@@ -188,12 +189,15 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 	}
 
 	if (rank == 0) {
-//		for (i = 0; i < rowSize; i++) {
-//			X->b[i] = XResult.b[i];
-//			//printf("|%g|",X->b[i]);
-//		}
+		X->b = malloc(rowSize * sizeof(double));
+		for (i = 0; i < rowSize; i++) {
+			X->b[i] = XResult.b[i];
+			X->n = rowSize;
+		//	printf("|%g|",X->b[i]);
+		}
 		freeMemory(&M, &N, &D, &L, &U);
 	}
+//	printf("Rank %d, GaussJordan - czynnosci wykonane\n", rank);
 	return 0;
 }
 

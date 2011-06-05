@@ -17,6 +17,7 @@ int checkMatrix(matrix_t *A){
 		diagPos = i * rowSize + i;
 		for(j = 0; j < rowSize; ++j){
 			pos = i * rowSize + j;
+			//printf("A %g \n", A->a[pos]);
 			if(pos != diagPos){
 				sumValue += A->a[pos];
 			}
