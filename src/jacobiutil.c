@@ -7,6 +7,27 @@
 
 #include "headers/jacobiutil.h"
 
+int checkMatrix(matrix_t *A){
+	int i, j,pos, diagPos, rowSize, dataSize;
+	double sumValue;
+	rowSize = A->n;
+
+	for(i = 0; i < rowSize; ++i){
+		sumValue = 0;
+		diagPos = i * rowSize + i;
+		for(j = 0; j < rowSize; ++j){
+			pos = i * rowSize + j;
+			if(pos != diagPos){
+				sumValue += A->a[pos];
+			}
+		}
+		if(sumValue > A->a[diagPos]){
+			return -1;
+		}
+	}
+	return 0;
+}
+
 int allocMemory(matrix_t *M, vector_t *N, matrix_t *D, matrix_t *L, matrix_t *U, vector_t *X, int n) {
 	int i;
 	M->a = malloc(n * n * sizeof(double));
