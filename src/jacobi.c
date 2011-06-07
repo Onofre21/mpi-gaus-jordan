@@ -151,7 +151,7 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 
 	//LICZENIE
 	int accuracy = 1000;
-	while (accuracy > 3) {
+	while (accuracy > 0.1) {
 		calculateX(localStart, nrows, &XResult, localM, localN, rowSize);
 
 		MPI_Barrier(MPI_COMM_WORLD);
