@@ -18,11 +18,13 @@ int checkMatrix(matrix_t *A){
 		for(j = 0; j < rowSize; ++j){
 			pos = i * rowSize + j;
 			//printf("A %g \n", A->a[pos]);
+
 			if(pos != diagPos){
-				sumValue += A->a[pos];
+				sumValue += abs(A->a[pos]);
 			}
 		}
-		if(sumValue > A->a[diagPos]){
+		if(sumValue > abs(A->a[diagPos])){
+			printf("\n\n Warunek nie sprawdził się dla wiersza %d.\n", i);
 			return -1;
 		}
 	}
