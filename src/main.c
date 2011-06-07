@@ -85,7 +85,7 @@ int main(int argc, char** argv) {
 		duplicateVector(&B_zast,&B);
 		gettimeofday(&start, &timezone);
 	}
-	calculateJacobi(A_zast, B_zast, &XJacobi, beginIndexes, endIndexes);
+	calculateJacobi(A_zast, B_zast, &XJacobi, beginIndexes, endIndexes, precision);
 	if (rank == 0) {
 		gettimeofday(&end, &timezone);
 		printResults("Jacobi", XJacobi, start, end);
