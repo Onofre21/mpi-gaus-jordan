@@ -187,17 +187,17 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 
 		MPI_Barrier(MPI_COMM_WORLD);
 
-		for (i = 0; i < rowSize; i++) {
+//		for (i = 0; i < rowSize; i++) {
 		//	printf("Rank %d, Komorka %d, wynik: %g \n", rank, i, XResult.b[i]);
-		}
+//		}
 
-		MPI_Barrier(MPI_COMM_WORLD);
 	//	printf("Rank %d", rank);
 		if (rank == 0) {
 			accuracy = getDelta(&XResult, &XResultOld, rowSize, nrows);
+		//	printf("Iteracja\n");
 		}
 		MPI_Bcast(&accuracy, 1, MPI_DOUBLE, rank, MPI_COMM_WORLD);
-//		printf("Rank %d Po BCast, %g, %g \n", rank, accuracy, precisionLocal);
+	//	printf("Rank %d Po BCast, %g, %g \n", rank, accuracy, precisionLocal);
 		MPI_Barrier(MPI_COMM_WORLD);
 	}
 
@@ -210,7 +210,8 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 		}
 		freeMemory(&M, &N, &D, &L, &U);
 	}
-//	printf("Rank %d, GaussJordan - czynnosci wykonane\n", rank);
+	printf("Rank %d, GaussJordan - koniec mej zacnej funkcji \n", rank);
+	MPI_Barrier(MPI_COMM_WORLD);
 	return 0;
 }
 
