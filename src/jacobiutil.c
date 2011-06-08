@@ -198,9 +198,9 @@ void calculateM(matrix_t *M, matrix_t *D, matrix_t *L, matrix_t *U) {
 	//	   for(i = 0 ; i < size; ++i){
 	//		   printf("D %g \n", D->a[i]);
 	//		}
-		   for(i = 0 ; i < size; ++i){
-			  printf("M %g \n", M->a[i]);
-			}
+//		   for(i = 0 ; i < size; ++i){
+//			  printf("M %g \n", M->a[i]);
+//			}
 	free(LU.a);
 }
 
