@@ -66,19 +66,18 @@ void printError(int error){
 
 void printResults(char* header,vector_t X,struct timeval start, struct timeval end){
 	int i = 0;
-	int sec,size,mili;
-	long milisec;
+	int sec,size;
+	long milisec,mili;
 	printf("Zakończono obliczenia metodą %s.\n",header);
 	printf("Otrzymano następujący wektor:\n");
 	for(; i < X.n; i++){
 		printf("X[%d] = %g\n",i,X.b[i]);
 	}
+
 	sec = end.tv_sec-start.tv_sec;
-	if(end.tv_usec < start.tv_usec){
+	if((mili = end.tv_usec-start.tv_usec) <0){
 		sec--;
-		mili = 1000000 - start.tv_usec +end.tv_usec;
-	}else{
-		mili = end.tv_usec - start.tv_usec;
+		mili += 1000000;
 	}
 	milisec = sec*1000000 + mili;
 	printf("%d %d %d %d\n",start.tv_sec,start.tv_usec,end.tv_sec,end.tv_usec);
@@ -89,17 +88,19 @@ void printResults(char* header,vector_t X,struct timeval start, struct timeval e
 void printResultsSequence(char* header,vector_t X,struct timeval start, struct timeval end){
 	int i = 0;
 	int sec,size;
-	long milisec;
+	long milisec,mili;
 	printf("Zakończono obliczenia sekwencyjną metodą %s.\n",header);
 	printf("Otrzymano następujący wektor:\n");
 	for(; i < X.n; i++){
 		printf("X[%d] = %g\n",i,X.b[i]);
 	}
 	sec = end.tv_sec-start.tv_sec;
-	if(end.tv_usec < start.tv_usec){
+	if((mili = end.tv_usec-start.tv_usec) <0){
 		sec--;
+		mili += 1000000;
 	}
-	//printf("%d %d %d %d\n",start.tv_sec,start.tv_usec,end.tv_sec,end.tv_usec);
+	milisec = sec*1000000 + mili;
+	printf("%d %d %d %d\n",start.tv_sec,start.tv_usec,end.tv_sec,end.tv_usec);
 	milisec = sec*1000000 + (end.tv_usec-start.tv_usec);
 	printf("Metoda sekwencyjna %s - czas pracy: %ld mikrosekund dla rzędu układu %d\n",header, milisec,X.n);
 }
