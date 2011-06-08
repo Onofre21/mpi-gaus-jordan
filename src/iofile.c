@@ -20,13 +20,15 @@ int readFile(char* filename, matrix_t* A, vector_t* B){
 	B->n = n;
 	B->b = malloc(n*sizeof(double));
 	if(B->b == NULL){
+		free(A->a);
 		return -4;
 	}
 
 	for(i = 0; i< n; ++i){
 		for(j = 0; j < n; ++j){
 			if(fscanf(file,"%lf",&(A->a[i*n+j])) != 1){
-				/*free mem*/
+				free(A->a);
+				free(B->b);
 				return -3;
 			}
 		}
@@ -34,7 +36,8 @@ int readFile(char* filename, matrix_t* A, vector_t* B){
 
 	for(i = 0; i < n ; ++i ){
 		if(fscanf(file,"%lf",&(B->b[i])) != 1){
-			/*free mem*/
+			free(A->a);
+			free(B->b);
 			return -3;
 		}
 	}
@@ -101,7 +104,6 @@ void printResultsSequence(char* header,vector_t X,struct timeval start, struct t
 	}
 	milisec = sec*1000000 + mili;
 	//printf("%d %d %d %d\n",start.tv_sec,start.tv_usec,end.tv_sec,end.tv_usec);
-	milisec = sec*1000000 + (end.tv_usec-start.tv_usec);
 	printf("Metoda sekwencyjna %s - czas pracy: %ld mikrosekund dla rzędu układu %d\n",header, milisec,X.n);
 }
 
