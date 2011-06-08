@@ -74,6 +74,36 @@ void freeMemory(matrix_t *M, vector_t *N, matrix_t *D, matrix_t *L, matrix_t *U)
 	free(U->a);
 }
 
+int allcMemoryAll(vector_t *XResult, vector_t *XResultOld, int **beginIndexes, int **endIndexes, int rowSize, int rank, int procSize) {
+	int i;
+	XResult->b = calloc(rowSize, sizeof(double));
+	XResultOld->b = malloc(rowSize * sizeof(double));
+
+	for (i = 0; i < rowSize; i++) {
+		XResultOld->b[i] = 100.0;
+	}
+
+	if (rank != 0) {
+		*beginIndexes = malloc(procSize * sizeof(int));
+		*endIndexes = malloc(procSize * sizeof(int));
+	}
+	if (XResult->b == NULL || *beginIndexes == NULL || *endIndexes == NULL || XResultOld->b == NULL) {
+		return -4;
+	}
+	return 0;
+}
+
+void freeMemoryAll(int **beginIndexes, int **endIndexes, vector_t *XResult, vector_t *XResultOld){
+	int rank;
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	free(XResult->b);
+	free(XResultOld->b);
+	if (rank != 0) {
+		free(*beginIndexes);
+		free(*endIndexes);
+	}
+}
+
 void calculateRDiagonal(matrix_t *A, matrix_t *D) {
 	int i, j;
 	int n;
