@@ -48,6 +48,9 @@ int getParams(int argc, char** argv,char* inputFile, double* precision){
 		*precision = DEFAULT_PRECISION;
 	}else{
 		*precision = atof(argv[2]);
+		if(*precision<0){
+			return -1;
+		}
 	}
 	return 0;
 }
