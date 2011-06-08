@@ -151,7 +151,7 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 			localN = malloc(nrows * sizeof(double));
 		}
 
-//		printf("My rank = %d. nrows %d", rank, nrows);
+		printf("My rank = %d. nrows %d", rank, nrows);
 		for (i = 0; i < nrows; i++) {
 //			printf("My rank = %d. Odbieram swoja daną nr: %d, RowSize %d\n ", rank, i, rowSize);
 			MPI_Recv(localM + (i*rowSize), rowSize, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
@@ -159,14 +159,16 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 		}
 	}
 //	printf("#DEBUG Rank = %d. Rezeslalem dane.  \n", rank);
+
+	printf("Rank %d, rowSize%d, localStart %d  \n", rank,rowSize, localStart);
 	MPI_Barrier(MPI_COMM_WORLD);
 		if (nrows >= 1) {
-			printf("Rank %d.Nrows %d, dataSize %d, rowSize%d, localN %g, localStart %d  \n", rank, nrows, dataSize, rowSize, localN, localStart);
+			printf("Rank %d.Nrows %d, dataSize %d, rowSize%d, localStart %d  \n", rank, nrows, dataSize, rowSize, localStart);
 			for (i = 0; i < rowSize * nrows; i++) {
-				printf("Rank %d. Moje lokalne M %g.\n", rank, localM[i]);
+				printf("Rank %d. Moje lokalne M %g. \n", rank, localM[i]);
 			}
 			for (i = 0; i < rowSize ; i++) {
-				printf("Rank %d. Moje rozwiązanie %g Stare %g\n", rank, XResult.b[i], XResultOld.b[i]);
+				printf("Rank %d. Moje rozwiązanie %g Stare %g LocalM %g\n", rank, XResult.b[i], XResultOld.b[i], localM[i]);
 			}
 		}
 	MPI_Barrier(MPI_COMM_WORLD);
