@@ -66,7 +66,7 @@ void printError(int error){
 
 void printResults(char* header,vector_t X,struct timeval start, struct timeval end){
 	int i = 0;
-	int sec,size;
+	int sec,size,mili;
 	long milisec;
 	printf("Zakończono obliczenia metodą %s.\n",header);
 	printf("Otrzymano następujący wektor:\n");
@@ -76,9 +76,12 @@ void printResults(char* header,vector_t X,struct timeval start, struct timeval e
 	sec = end.tv_sec-start.tv_sec;
 	if(end.tv_usec < start.tv_usec){
 		sec--;
+		mili = 1000000 - start.tv_usec +end.tv_usec;
+	}else{
+		mili = end.tv_usec - start.tv_usec;
 	}
-	milisec = sec*1000000 + (end.tv_usec-start.tv_usec);
-	//printf("%d %d %d %d\n",start.tv_sec,start.tv_usec,end.tv_sec,end.tv_usec);
+	milisec = sec*1000000 + mili;
+	printf("%d %d %d %d\n",start.tv_sec,start.tv_usec,end.tv_sec,end.tv_usec);
 	MPI_Comm_size(MPI_COMM_WORLD,&size);
 	printf("Metoda %s - czas pracy: %ld mikrosekund dla rzędu układu %d i %d procesów\n",header, milisec,X.n,size);
 }

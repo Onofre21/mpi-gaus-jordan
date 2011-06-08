@@ -216,7 +216,7 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 	}
 	free(localM);
 
-	printf("Rank %d, GaussJordan - koniec mej zacnej funkcji \n", rank);
+	//printf("Rank %d, GaussJordan - koniec mej zacnej funkcji \n", rank);
 	MPI_Barrier(MPI_COMM_WORLD);
 	return 0;
 }
