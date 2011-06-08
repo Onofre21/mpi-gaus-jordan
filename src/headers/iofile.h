@@ -15,6 +15,5 @@ int readFile(char*, matrix_t*, vector_t*);
 void printError(int);
 void printResults(char*,vector_t X, struct timeval , struct timeval );
 void printResultsSequence(char*,vector_t X,struct timeval, struct timeval);
-void printTimeDiff(struct timeval times[4]);
 
 #endif /* IOFILE_H_ */

@@ -18,7 +18,7 @@ typedef struct {
 	int rank;
 } WhichRank;
 
-
-int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* endIndexes);
+int calculateGauss(matrix_t A, vector_t B, vector_t* X, int* beginIndexes,
+		int* endIndexes);
 
 #endif /* GAUSSJORDAN_H_ */
