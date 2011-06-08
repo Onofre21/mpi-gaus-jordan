@@ -56,7 +56,7 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 
 	//znaczniki do obliczen
 	if(nrows > 0){
-		//czy wiersz byl
+		//czy wiersz byl juz wybrany jako posiadajacy najwiekszy element w kolumnie
 		markedRows = (int*)malloc(nrows*sizeof(int));
 	}
 	columnChecked = (int*)malloc((dataSize-1)*sizeof(int));
