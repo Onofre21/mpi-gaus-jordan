@@ -1,0 +1,10 @@
+//Nie uruchamiac z tym bo sie wysypie.
+[rowCount][columnCount]
+[A11]        [A12]        ..  [A1ColumnCount] //Definicja macierzy A
+[A21]        [A22]        ..  [A1ColumnCount]
+ ..            ..         ..
+[ArowCount1] [ArowCount2] ..  [ArowCountColumnCount]
+[B1] //Definicja macierzy B
+[B2]
+[BrowCount]
+//Przyklad w pliku "data"
