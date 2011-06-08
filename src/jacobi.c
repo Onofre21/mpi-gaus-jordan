@@ -49,8 +49,7 @@ void calculateX(int row, int nrows, vector_t *XResult, double *localM, double lo
 int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int* endIndexes, double precision) {
 	int rank, procSize, i, j, nrows, dataSize, rowSize, localStart;
 	double *localM;
-	double localN;
-	double precisionLocal;
+	double localN, precisionLocal, accuracy;
 
 	MPI_Status status;
 	matrix_t M, D, L, U;
@@ -58,6 +57,7 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 	vector_t XResult, XResultOld;
 	MPI_Comm_size(MPI_COMM_WORLD, &procSize);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	accuracy = 1000;
 
 	if (rank == 0) {
 		if(checkMatrix(&A) < 0){
@@ -121,8 +121,8 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 			MPI_Send(&(beginIndexes[i]), 1, MPI_INT, i, 0, MPI_COMM_WORLD);
 			for (j = beginIndexes[i]; j <= endIndexes[i]; j++) {
 //				printf("Wysyłam do rank:%d \n ", i);
-				MPI_Send(&(M.a[rowSize * j]), rowSize, MPI_DOUBLE, i, i, MPI_COMM_WORLD);
-				MPI_Send(&(N.b[j]), 1, MPI_DOUBLE, i, i, MPI_COMM_WORLD);
+				MPI_Send(&(M.a[rowSize * j]), rowSize, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+				MPI_Send(&(N.b[j]), 1, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
 			}
 		}
 		localM = (double*) malloc(rowSize * sizeof(double));
@@ -143,8 +143,8 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 //		printf("My rank = %d. nrows %d", rank, nrows);
 		for (i = 0; i < nrows; i++) {
 //			printf("My rank = %d. Odbieram swoja daną nr: %d, RowSize %d\n ", rank, i, rowSize);
-			MPI_Recv(localM + (i*rowSize), rowSize, MPI_DOUBLE, 0, rank, MPI_COMM_WORLD, &status);
-			MPI_Recv(&localN + (i*rowSize), 1, MPI_DOUBLE, 0, rank, MPI_COMM_WORLD, &status);
+			MPI_Recv(localM + (i*rowSize), rowSize, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
+			MPI_Recv(&localN + (i*rowSize), 1, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
 		}
 	}
 //	printf("#DEBUG Rank = %d. Rezeslalem dane.  \n", rank);
@@ -158,7 +158,7 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 	MPI_Barrier(MPI_COMM_WORLD);
 
 	//LICZENIE
-	double accuracy = 1000;
+
 	while (accuracy > precisionLocal) {
 //		printf("Rank %d", rank);
 		calculateX(localStart, nrows, &XResult, localM, localN, rowSize);
@@ -208,6 +208,14 @@ int calculateJacobi(matrix_t A, vector_t B, vector_t* X, int* beginIndexes, int*
 		}
 		freeMemory(&M, &N, &D, &L, &U);
 	}
+	free(XResult.b);
+	free(XResultOld.b);
+	if(rank != 0){
+	free(beginIndexes);
+	free(endIndexes);
+	}
+	free(localM);
+
 	printf("Rank %d, GaussJordan - koniec mej zacnej funkcji \n", rank);
 	MPI_Barrier(MPI_COMM_WORLD);
 	return 0;
