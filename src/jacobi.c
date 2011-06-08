@@ -35,7 +35,7 @@ void calculateX(int row, int nrows, vector_t *XResult, double *localM, double *l
 			result = 0;
 			for (i = 0; i < rowSize; i++) {
 //				printf("RANK %d +> LocalM %g, X %g, localN %g, \n", rank, localM[i], XResult->b[i], localN);
-				result = result + localM[i] * XResult->b[i];
+				result += localM[i] * XResult->b[i];
 			}
 			result = result + localN[j];
 			XResult->b[row + j] = result;
