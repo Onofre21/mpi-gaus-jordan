@@ -18,16 +18,21 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 	if(rank == 0){
 		dataSize = A.n+1;
 	}
+	//rozeslanie rozmiaru wiersza: dla ulatwienia wiersz to ilosc kolumn macierzy A + 1 jako wartosc z wektora B
 	MPI_Bcast(&dataSize,1,MPI_INT,0,MPI_COMM_WORLD);
 	if(rank == 0){
+		//dla kazdego procesu
 		for(i = 1; i < procSize; i++){
 			nrows = endIndexes[i] - beginIndexes[i]+1;
+			//przesylam ilosc wierszy
 			MPI_Send(&nrows,1,MPI_INT,i,0,MPI_COMM_WORLD);
+			//rozeslanie odpowiednich wierszy do kazdego procesu
 			for(j = beginIndexes[i]; j <= endIndexes[i];j++){
 				MPI_Send(&(A.a[A.n*j]),A.n,MPI_DOUBLE,i,0,MPI_COMM_WORLD);
 				MPI_Send(&(B.b[j]),1,MPI_DOUBLE,i,0,MPI_COMM_WORLD);
 			}
 		}
+		//proces zerowy zapisuje wlasne dane
 		nrows = endIndexes[0] - beginIndexes[0]+1;
 		data = (double*)malloc((nrows)*dataSize*sizeof(double));
 		for(i = beginIndexes[0]; i <= endIndexes[0]; i++){
@@ -37,22 +42,21 @@ int calculateGauss(matrix_t A,vector_t B, vector_t* X, int* beginIndexes, int* e
 			data[(i+1)*dataSize-1] = B.b[i];
 		}
 	}else{
+		//odebranie ilosci wierszy do obliczen przez proces
 		MPI_Recv(&nrows,1,MPI_INT,0,0,MPI_COMM_WORLD,&status);
 		if(nrows >0){
 			data = (double*)malloc(nrows*dataSize*sizeof(double));
 		}
+		//odebranie wierszy do obliczen
 		for( i = 0; i < nrows; i++){
 			MPI_Recv(data+i*dataSize,dataSize-1,MPI_DOUBLE,0,0,MPI_COMM_WORLD,&status);
 			MPI_Recv(data+((i+1)*dataSize)-1,1,MPI_DOUBLE,0,0,MPI_COMM_WORLD,&status);
 		}
 	}
 
-	/*for(i = 0; i < nrows; i++){
-		for(j = 0; j < dataSize;j++){
-			printf("RANK #%d: data[%d][%d] = %g\n",rank,i,j,data[i*dataSize+j]);
-		}
-	}*/
+	//znaczniki do obliczen
 	if(nrows > 0){
+		//czy wiersz byl
 		markedRows = (int*)malloc(nrows*sizeof(int));
 	}
 	columnChecked = (int*)malloc((dataSize-1)*sizeof(int));
