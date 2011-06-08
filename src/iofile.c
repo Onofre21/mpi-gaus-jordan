@@ -106,7 +106,3 @@ void printResultsSequence(char* header,vector_t X,struct timeval start, struct t
 	//printf("%d %d %d %d\n",start.tv_sec,start.tv_usec,end.tv_sec,end.tv_usec);
 	printf("Metoda sekwencyjna %s - czas pracy: %ld mikrosekund dla rzędu układu %d\n",header, milisec,X.n);
 }
-
-void printTimeDiff(struct timeval times[4]){
-	/*TODO wypisać info o różnicy czasów*/
-}

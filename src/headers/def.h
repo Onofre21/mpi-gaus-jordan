@@ -12,15 +12,14 @@
 #include <stdio.h>
 
 #define DEFAULT_PRECISION 1e-6
-typedef struct a{
+typedef struct a {
 	double *a;
 	int n;
 } matrix_t;
 
-typedef struct b{
+typedef struct b {
 	double *b;
 	int n;
-}vector_t;
-
+} vector_t;
 
 #endif /* DEF_H_ */
