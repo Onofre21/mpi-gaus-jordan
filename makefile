@@ -22,6 +22,9 @@ iofile:
 util:  
 	${CC} -c ${FLAGS} src/util.c src/headers/util.h src/headers/def.h
 
+generator:
+	gcc -o bin/generator src/generator.c
+
 run:
 	mpiexec -np 5 ${BIN} ${DATA}
 	
@@ -41,7 +44,7 @@ run6:
 	mpiexec -np 5 ${BIN} ${DATA}Jacobi
 
 run7:
-	mpiexec -np 3 ${BIN} ${DATA}Jacobi2
+	mpiexec -np 3 ${BIN} ${DATA}Jacobi2 
 	
 clean: 
 	rm *.o
